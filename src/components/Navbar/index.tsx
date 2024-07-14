@@ -1,5 +1,6 @@
 "use client";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { logOut } from "@/firebase/auth";
 import { User } from "firebase/auth";
 import Link from "next/link";
 import React from "react";
@@ -52,7 +53,7 @@ export default function Navbar() {
                   <a>Settings</a>
                 </li>
                 <li>
-                  <a>Logout</a>
+                  <button onClick={logOut}>Log out</button>
                 </li>
               </ul>
             </div>

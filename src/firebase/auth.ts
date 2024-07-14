@@ -1,5 +1,4 @@
 import {
-  User,
   UserCredential,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
