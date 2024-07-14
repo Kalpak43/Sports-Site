@@ -7,8 +7,8 @@ export default function layout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+// TODO: Not really protected
 
-  
 
   return (
     <main className="bg-neutral">

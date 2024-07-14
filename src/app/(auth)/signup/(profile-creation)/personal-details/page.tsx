@@ -5,7 +5,7 @@ import { SignUpData } from "@/types/SignUpData";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function page() {
+export default function PersonalDetailsPage() {
   const router = useRouter();
 
   let date = new Date();

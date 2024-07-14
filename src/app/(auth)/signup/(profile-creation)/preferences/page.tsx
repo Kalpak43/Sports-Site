@@ -6,7 +6,7 @@ import { SignUpData } from "@/types/SignUpData";
 import { useRouter } from "next/navigation";
 import React from "react";
 
-export default function page() {
+export default function Preferences() {
   const router = useRouter();
 
   const { signUpData, setSignUpData, setSessionStorage } =
