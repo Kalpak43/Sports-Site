@@ -97,17 +97,6 @@ export default function BasicDetailsPage() {
               type="file"
               className="file-input file-input-bordered file-input-md grow"
               accept="image/*"
-              onChange={(e) => {
-                if (e.target.files) {
-                  convertToBase64(e.target.files[0]).then((res) => {
-                    setSignUpData &&
-                      setSignUpData({
-                        ...signUpData,
-                        profilePhoto: res,
-                      } as SignUpData);
-                  });
-                }
-              }}
             />
           </label>
           <button
@@ -128,3 +117,15 @@ export default function BasicDetailsPage() {
     </main>
   );
 }
+
+{/*               onChange={(e) => {
+                if (e.target.files) {
+                  convertToBase64(e.target.files[0]).then((res) => {
+                    setSignUpData &&
+                      setSignUpData({
+                        ...signUpData,
+                        profilePhoto: res,
+                      } as SignUpData);
+                  });
+                }
+              }} */}
