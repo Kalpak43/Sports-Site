@@ -4,7 +4,7 @@ import { useSignUpDataContext } from "@/contexts/SignupDataContext";
 import { uploadSignupData } from "@/firebase/db";
 import { SignUpData } from "@/types/SignUpData";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useState } from "react";
 
 export default function Preferences() {
   const router = useRouter();
@@ -12,7 +12,8 @@ export default function Preferences() {
   const { signUpData, setSignUpData, setSessionStorage } =
     useSignUpDataContext() || {};
 
-  const { user } = useAuthContext() || {};
+  const { user, setDataUploaded } = useAuthContext();
+  const [loading, setLoading] = useState(false);
 
   const sports = [
     "Cricket",
@@ -33,6 +34,8 @@ export default function Preferences() {
       return;
     }
 
+    setLoading(true);
+
     setSessionStorage?.({ ...signUpData } as SignUpData);
 
     const { result, error } = await uploadSignupData(
@@ -43,11 +46,14 @@ export default function Preferences() {
     if (error) {
       alert("An error occurred. Please try again.");
       console.log(error);
+      setLoading(false);
       return;
     }
 
     alert("Preferences saved successfully.");
     alert("You will be redirected to the home page.");
+    setDataUploaded?.(true);
+    setLoading(false);
 
     router.replace("/");
   };
@@ -93,9 +99,14 @@ export default function Preferences() {
 
         <button
           onClick={handleSubmit}
-          className="btn btn-primary block mx-auto"
+          className="btn btn-primary block mx-auto w-full"
+          disabled={loading}
         >
-          Continue
+          {loading ? (
+            <span className="loading loading-spinner"></span>
+          ) : (
+            "continue"
+          )}
         </button>
       </div>
     </main>

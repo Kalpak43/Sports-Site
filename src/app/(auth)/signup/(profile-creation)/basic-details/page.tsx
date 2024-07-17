@@ -9,7 +9,6 @@ import React, { useEffect, useRef, useState } from "react";
 export default function BasicDetailsPage() {
   const router = useRouter();
 
-
   const { signUpData, setSignUpData, setSessionStorage } =
     useSignUpDataContext() || {};
 
@@ -50,6 +49,7 @@ export default function BasicDetailsPage() {
               required
             />
           </label>
+
           <label className="form-control w-full">
             <div className="label">
               <span className="label-text">Set your Username</span>
@@ -69,6 +69,7 @@ export default function BasicDetailsPage() {
               required
             />
           </label>
+
           <label className="form-control w-full">
             <div className="label">
               <span className="label-text">Set your Bio</span>
@@ -89,6 +90,7 @@ export default function BasicDetailsPage() {
               required
             />
           </label>
+
           <label className="form-control">
             <div className="label">
               <span className="label-text">Upload your Profile Photo</span>
@@ -97,28 +99,7 @@ export default function BasicDetailsPage() {
               type="file"
               className="file-input file-input-bordered file-input-md grow"
               accept="image/*"
-            />
-          </label>
-          <button
-            type="submit"
-            //   disabled={loading}
-            className="btn btn-primary w-full"
-          >
-            Next
-          </button>
-        </form>
-      </div>
-      {/* <Image
-        src={"data:image/png;base64," + signUpData?.profilePhoto}
-        alt=""
-        width={500}
-        height={500}
-      /> */}
-    </main>
-  );
-}
-
-{/*               onChange={(e) => {
+              onChange={(e) => {
                 if (e.target.files) {
                   convertToBase64(e.target.files[0]).then((res) => {
                     setSignUpData &&
@@ -128,4 +109,19 @@ export default function BasicDetailsPage() {
                       } as SignUpData);
                   });
                 }
-              }} */}
+              }}
+            />
+          </label>
+          
+          <button
+            type="submit"
+            // disabled={loading}
+            className="btn btn-primary w-full"
+          >
+            Next
+          </button>
+        </form>
+      </div>
+    </main>
+  );
+}

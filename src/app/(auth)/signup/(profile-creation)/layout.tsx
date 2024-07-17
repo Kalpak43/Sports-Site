@@ -4,6 +4,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { SignUpDataProvider } from "@/contexts/SignupDataContext";
 import { User } from "firebase/auth";
 import { useRouter } from "next/navigation";
+import { useState } from "react";
 
 export default function ProfileCreationLayout({
   children,
