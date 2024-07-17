@@ -3,6 +3,7 @@
 import { isSignedUp } from "@/firebase/db";
 import { auth } from "@/firebase/firebase";
 import { User, onAuthStateChanged } from "firebase/auth";
+import { useRouter } from "next/navigation";
 import {
   ReactNode,
   createContext,
@@ -20,9 +21,10 @@ export const AuthContext = createContext<{
 export const useAuthContext = () => useContext(AuthContext);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
+  const router = useRouter();
   const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [isProfileCreated, setIsProfileCreated] = useState(false);
+  const [loading, setLoading] = useState<boolean>(true);
+  const [isProfileCreated, setIsProfileCreated] = useState<boolean>(false);
 
   useEffect(() => {
     const unsubscribe = onAuthStateChanged(auth, async (user) => {
@@ -38,6 +40,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     return () => unsubscribe();
   }, []);
+
+  useEffect(() => {
+    if (!loading && user && !isProfileCreated) {
+      router.push("/signup/basic-details");
+    }
+  }, [loading, user, isProfileCreated, router]);
 
   return (
     <AuthContext.Provider value={{ user, loading, isProfileCreated }}>

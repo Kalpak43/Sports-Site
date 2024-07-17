@@ -3,7 +3,7 @@ import { useAuthContext } from "@/contexts/AuthContext";
 import { SignUpDataProvider } from "@/contexts/SignupDataContext";
 import { User } from "firebase/auth";
 import { useRouter } from "next/navigation";
-import React from "react";
+import React, { useEffect } from "react";
 
 export default function AuthLayout({
   children,
@@ -17,16 +17,15 @@ export default function AuthLayout({
   };
   const router = useRouter();
 
-  if (user) {
-    console.log("Auth: ", user);
-
-    if (!isProfileCreated) {
-      router.push("/signup/basic-details");
-    } else {
-      router.replace("/");
-      return <></>;
+  useEffect(() => {
+    if (user) {
+      if (!isProfileCreated) {
+        router.replace("/signup/basic-details");
+      } else {
+        router.replace("/");
+      }
     }
-  }
+  }, [user, isProfileCreated, router]);
 
   return <>{children}</>;
 }
