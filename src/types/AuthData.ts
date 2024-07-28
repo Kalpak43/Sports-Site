@@ -7,4 +7,5 @@ export interface AuthData {
   isProfileCreated: boolean;
   userData: UserData | null;
   setDataUploaded: (data: boolean) => void;
+  setUserData: (data: UserData) => void;
 }

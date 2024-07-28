@@ -6,7 +6,7 @@ export interface UserData {
   gender: "male" | "female" | "other";
   name: string;
   preferences: string[];
-  profilePhoto: string;
+  profilePhoto: string | null;
   state: string;
   username: string;
 }

@@ -68,7 +68,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, loading, isProfileCreated, userData, setDataUploaded }}
+      value={{
+        user,
+        loading,
+        isProfileCreated,
+        userData,
+        setUserData,
+        setDataUploaded,
+      }}
     >
       {loading ? (
         <div className="min-h-[100dvh] flex items-center justify-center">

@@ -7,14 +7,10 @@ import Image from "next/image";
 import Link from "next/link";
 import React, { useEffect } from "react";
 import { FaGithub } from "react-icons/fa6";
-
+import SearchBar from "../SearchBar/SearchBar";
 
 export default function Navbar() {
   const { user, userData } = useAuthContext();
-
-  useEffect(() => {
-    console.log(userData);
-  }, [userData]);
 
   return (
     <div className="navbar p-4 bg-inherit sticky top-0 z-50">
@@ -26,13 +22,8 @@ export default function Navbar() {
       <div className="flex-none gap-2">
         {user ? (
           <>
-            <div className="form-control hidden md:block">
-              <input
-                type="text"
-                placeholder="Search"
-                className="input input-bordered w-24 md:w-auto"
-              />
-            </div>
+            <SearchBar />
+
             <div className="dropdown dropdown-end">
               <div
                 tabIndex={0}
