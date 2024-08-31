@@ -7,6 +7,8 @@ import { FaCakeCandles, FaPlus } from "react-icons/fa6";
 import { FaLocationArrow } from "react-icons/fa";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import Link from "next/link";
+import DisplayPosts from "@/components/DisplayPosts";
+import { getAllPosts } from "@/firebase/db";
 
 export default function ProfilePage() {
   const { user, userData } = useAuthContext();
@@ -57,16 +59,17 @@ export default function ProfilePage() {
             );
           })}
         </div>
-        <div className="p-8 border-2 border-gray-600 rounded-3xl flex gap-2 flex-wrap items-center justify-center h-[40dvh]">
-          <button className="group">
-            <span className="block w-fit mx-auto p-2 rounded-full border-2 border-primary group-hover:bg-primary transition-all duration-200">
+        <div className="p-8 border-2 border-gray-600 rounded-3xl grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+          <Link href={"?new_post=true"} className="group py-2 lg:aspect-square flex flex-col items-center justify-center border-2 border-primary rounded-2xl">
+            <span className="block w-fit mx-auto p-2 rounded-full  group-hover:bg-primary transition-all duration-200">
               <FaPlus
                 size={30}
                 className="text-primary group-hover:text-base-300 transition-all duration-200"
               />
             </span>
             New Post
-          </button>
+          </Link>
+          <DisplayPosts getPosts={getAllPosts} />
         </div>
       </div>
     </div>

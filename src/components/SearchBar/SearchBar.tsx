@@ -43,7 +43,7 @@ export default function SearchBar() {
       />
       <div
         id="search__result"
-        className="rounded-xl absolute top-full left-0 right-0 p-4 bg-base-300 my-2 border-2 border-gray-600 hidden peer-focus:block"
+        className="rounded-xl absolute top-full left-0 right-0 p-4 bg-base-300 my-2 border-2 border-gray-600 hidden peer-focus:block hover:block active:block"
       >
         {search ? (
           <>

@@ -1,7 +1,9 @@
 "use client";
+import Modal from "@/components/Modal";
+import NewPostForm from "@/components/NewPostForm";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { User } from "firebase/auth";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect } from "react";
 
 export default function ProtectedLayout({
@@ -10,6 +12,7 @@ export default function ProtectedLayout({
   children: React.ReactNode;
 }>) {
   const router = useRouter();
+
 
   const { user, isProfileCreated } = useAuthContext() as {
     user: User | null;
@@ -25,5 +28,9 @@ export default function ProtectedLayout({
       }
     }
   }, [user, isProfileCreated]);
-  return <>{children}</>;
+  return (
+    <>
+      {children}
+    </>
+  );
 }

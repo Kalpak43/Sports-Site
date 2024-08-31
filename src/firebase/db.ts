@@ -1,4 +1,5 @@
 import {
+  addDoc,
   collection,
   doc,
   getDoc,
@@ -7,10 +8,18 @@ import {
   setDoc,
   where,
 } from "firebase/firestore";
-import { db } from "./firebase";
+import { db, storage } from "./firebase";
 import { SignUpData } from "@/types/SignUpData";
 import { FirebaseError } from "firebase/app";
 import { UserData } from "@/types/UserData";
+import { PostData } from "@/types/PostData";
+import { mediaUpload } from "./storage";
+import {
+  deleteObject,
+  getDownloadURL,
+  ref,
+  StorageReference,
+} from "firebase/storage";
 
 export async function uploadSignupData(signUpData: SignUpData, uid: string) {
   let result: string | null = null,
@@ -104,6 +113,67 @@ export async function searchUser(searchQuery: string) {
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
       result = doc.data() as UserData;
+    });
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function makePost(post: PostData, uid: string) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  let mediaUrls: StorageReference[] = [];
+
+  try {
+    await Promise.all(
+      post.media.map(async (m) => {
+        const { result, error } = await mediaUpload(m, "user-posts");
+        if (result) {
+          mediaUrls.push(result);
+        } else {
+          throw error;
+        }
+      })
+    );
+
+    await Promise.all(
+      mediaUrls.map(async (m, i) => {
+        const url = await getDownloadURL(m);
+        post.media[i] = url;
+      })
+    );
+
+    const collectionRef = collection(db, "posts");
+    await addDoc(collectionRef, {
+      uid: uid,
+      ...post,
+    });
+
+    result = "Post made successfully!";
+  } catch (e) {
+    error = e as FirebaseError;
+    await Promise.all(
+      mediaUrls.map(async (m) => {
+        await deleteObject(m);
+      })
+    );
+  }
+
+  return { result, error };
+}
+
+export async function getAllPosts() {
+  let result: PostData[] = [],
+    error: FirebaseError | null = null;
+
+  try {
+    const postsRef = collection(db, "posts");
+    const querySnapshot = await getDocs(postsRef);
+    querySnapshot.forEach((doc) => {
+      result.push(doc.data() as PostData);
     });
   } catch (e) {
     error = e as FirebaseError;
