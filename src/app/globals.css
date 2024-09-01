@@ -22,9 +22,8 @@ input:focus:invalid {
 } */
 
 
-img {
+.post img {
 	background: linear-gradient(-45deg, #cdcdcd, #535252);
-	background-size: 400% 400%;
 	animation: gradient 15s ease infinite;
 	height: 100vh;
 }

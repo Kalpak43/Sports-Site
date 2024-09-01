@@ -1,7 +1,7 @@
 "use client";
 
 import { useAuthContext } from "@/contexts/AuthContext";
-import { getSinglePost } from "@/firebase/db";
+import { getSinglePost, likePost } from "@/firebase/db";
 import { PostData } from "@/types/PostData";
 import Image from "next/image";
 import { useParams, useRouter } from "next/navigation";
@@ -22,7 +22,10 @@ export default function PostPage() {
   useEffect(() => {
     const getPosts = async () => {
       setLoading(true);
-      const { result, error } = await getSinglePost(id as string);
+      const { result, error } = await getSinglePost(
+        id as string,
+        user?.uid as string
+      );
 
       if (error) {
         alert(error);
@@ -44,6 +47,33 @@ export default function PostPage() {
       } else {
         carousel.scrollLeft += 300;
       }
+    }
+  };
+
+  const handleLike = async () => {
+    if (!user) router.push("/login");
+
+    const { result, error } = await likePost(
+      post?.id as string,
+      user?.uid as string
+    );
+
+    if (error) {
+      alert(error);
+    }
+
+    if (result) {
+      setPost((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            liked: true,
+            likes: prev.likes + 1,
+          };
+        }
+
+        return prev;
+      });
     }
   };
 
@@ -83,8 +113,10 @@ export default function PostPage() {
               </button>
             </div>
             <div className="py-2 flex gap-4">
-              <button className="text-center flex items-center gap-2">
-                <FaRegHeart size={30} className="text-[#ff00ff]" />
+              <button className="text-center flex items-center gap-2" disabled={post.liked} onClick={() => {
+                handleLike();
+              }}>
+                <FaRegHeart size={30} className="text-[#ff00ff] text-[#ff00ff]" />
                 <span className="text-lg">{post.likes}</span>
               </button>
               <button className="text-center flex items-center gap-2">

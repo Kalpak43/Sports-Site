@@ -4,8 +4,10 @@ import {
   doc,
   getDoc,
   getDocs,
+  increment,
   query,
   setDoc,
+  updateDoc,
   where,
 } from "firebase/firestore";
 import { db, storage } from "./firebase";
@@ -147,9 +149,15 @@ export async function makePost(post: PostData, uid: string) {
     );
 
     const collectionRef = collection(db, "posts");
-    await addDoc(collectionRef, {
+    const postDocRef = await addDoc(collectionRef, {
       uid: uid,
       ...post,
+    });
+
+    const likesCollectionRef = collection(postDocRef, "posts");
+    const initialLike = doc(likesCollectionRef, uid);
+    await setDoc(initialLike, {
+      createdAt: new Date().toISOString(),
     });
 
     result = "Post made successfully!";
@@ -175,7 +183,7 @@ export async function getAllPosts() {
     querySnapshot.forEach((doc) => {
       result.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       } as PostData);
     });
   } catch (e) {
@@ -196,7 +204,7 @@ export async function getAllPostsByUser(uid: string) {
     querySnapshot.forEach((doc) => {
       result.push({
         id: doc.id,
-        ...doc.data()
+        ...doc.data(),
       } as PostData);
     });
   } catch (e) {
@@ -206,7 +214,7 @@ export async function getAllPostsByUser(uid: string) {
   return { result, error };
 }
 
-export async function getSinglePost(id: string) {
+export async function getSinglePost(id: string, uid: string) {
   let result: PostData | null = null,
     error: FirebaseError | null = null;
 
@@ -215,7 +223,56 @@ export async function getSinglePost(id: string) {
     const postDoc = await getDoc(postRef);
 
     if (postDoc.exists()) {
-      result = postDoc.data() as PostData;
+      result = {
+        id: postDoc.id,
+        ...postDoc.data(),
+      } as PostData;
+
+      result.liked = await checkLiked(id, uid).then((res) => res.result);
+    }
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function likePost(id: string, uid: string) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  console.log("id", id);
+  console.log("uid", uid);
+
+  try {
+    const postRef = doc(db, "posts", id);
+    const likesDocRef = doc(db, "posts", id, "likes", uid);
+    await setDoc(likesDocRef, {
+      createdAt: new Date().toISOString(),
+    });
+
+    await updateDoc(postRef, {
+      likes: increment(1),
+    });
+
+    result = "Post liked successfully!";
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function checkLiked(id: string, uid: string) {
+  let result: boolean = false,
+    error: FirebaseError | null = null;
+
+  try {
+    if (uid !== "") {
+      const likesDocRef = doc(db, "posts", id, "likes", uid);
+      const likesDoc = await getDoc(likesDocRef);
+
+      result = likesDoc.exists();
     }
   } catch (e) {
     error = e as FirebaseError;

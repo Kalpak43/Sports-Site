@@ -6,5 +6,6 @@ export interface PostData {
   caption: string | null;
   likes: number;
   comments: number;
+  liked?: boolean;
   uid?: string;
 }
