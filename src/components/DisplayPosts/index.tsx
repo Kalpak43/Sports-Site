@@ -6,6 +6,7 @@ import Image from "next/image";
 import React, { useEffect } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { BiCommentDetail } from "react-icons/bi";
+import Link from "next/link";
 
 export default function DisplayPosts({
   getPosts,
@@ -41,7 +42,7 @@ export default function DisplayPosts({
         <>
           {posts.map((p, index) => {
             return (
-              <div
+              <Link href={`/post/${p.id}`}
                 key={index}
                 className="w-full aspect-square relative rounded-2xl group overflow-hidden"
               >
@@ -69,7 +70,7 @@ export default function DisplayPosts({
                     {p.comments}
                   </button>
                 </div>
-              </div>
+              </Link>
             );
           })}
         </>

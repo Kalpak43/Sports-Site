@@ -173,7 +173,10 @@ export async function getAllPosts() {
     const postsRef = collection(db, "posts");
     const querySnapshot = await getDocs(postsRef);
     querySnapshot.forEach((doc) => {
-      result.push(doc.data() as PostData);
+      result.push({
+        id: doc.id,
+        ...doc.data()
+      } as PostData);
     });
   } catch (e) {
     error = e as FirebaseError;
@@ -191,8 +194,29 @@ export async function getAllPostsByUser(uid: string) {
     const q = query(postsRef, where("uid", "==", uid));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      result.push(doc.data() as PostData);
+      result.push({
+        id: doc.id,
+        ...doc.data()
+      } as PostData);
     });
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function getSinglePost(id: string) {
+  let result: PostData | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const postRef = doc(db, "posts", id);
+    const postDoc = await getDoc(postRef);
+
+    if (postDoc.exists()) {
+      result = postDoc.data() as PostData;
+    }
   } catch (e) {
     error = e as FirebaseError;
   }
