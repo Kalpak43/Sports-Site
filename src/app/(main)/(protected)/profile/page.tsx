@@ -2,13 +2,13 @@
 
 import { useAuthContext } from "@/contexts/AuthContext";
 import Image from "next/image";
-import React from "react";
+import React, { useEffect } from "react";
 import { FaCakeCandles, FaPlus } from "react-icons/fa6";
 import { FaLocationArrow } from "react-icons/fa";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import Link from "next/link";
 import DisplayPosts from "@/components/DisplayPosts";
-import { getAllPosts } from "@/firebase/db";
+import { getAllPosts, getAllPostsByUser } from "@/firebase/db";
 
 export default function ProfilePage() {
   const { user, userData } = useAuthContext();
@@ -69,7 +69,9 @@ export default function ProfilePage() {
             </span>
             New Post
           </Link>
-          <DisplayPosts getPosts={getAllPosts} />
+          <DisplayPosts getPosts={() => {
+            return getAllPostsByUser(user?.uid as string);
+          }} />
         </div>
       </div>
     </div>

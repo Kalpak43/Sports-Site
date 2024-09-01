@@ -181,3 +181,21 @@ export async function getAllPosts() {
 
   return { result, error };
 }
+
+export async function getAllPostsByUser(uid: string) {
+  let result: PostData[] = [],
+    error: FirebaseError | null = null;
+
+  try {
+    const postsRef = collection(db, "posts");
+    const q = query(postsRef, where("uid", "==", uid));
+    const querySnapshot = await getDocs(q);
+    querySnapshot.forEach((doc) => {
+      result.push(doc.data() as PostData);
+    });
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}

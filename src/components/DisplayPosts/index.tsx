@@ -1,3 +1,5 @@
+
+
 import { PostData } from "@/types/PostData";
 import { FirebaseError } from "firebase/app";
 import Image from "next/image";
@@ -21,9 +23,9 @@ export default function DisplayPosts({
       setLoading(true);
       const { result, error } = await getPosts();
       if (error) {
-        console.error(error);
+        alert(error);
       } else {
-        setPosts(result);
+        setPosts(result.sort((a, b) => Number(b.createdAt) - Number(a.createdAt)));
       }
       setLoading(false);
     }
@@ -39,7 +41,10 @@ export default function DisplayPosts({
         <>
           {posts.map((p, index) => {
             return (
-              <div key={index} className="w-full aspect-square relative rounded-2xl group overflow-hidden">
+              <div
+                key={index}
+                className="w-full aspect-square relative rounded-2xl group overflow-hidden"
+              >
                 <div className="w-full h-full carousel">
                   {p.media.map((m, index) => {
                     return (

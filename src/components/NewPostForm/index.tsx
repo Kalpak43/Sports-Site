@@ -16,6 +16,7 @@ export default function NewPostForm() {
 
   const { user } = useAuthContext();
   const [newPostData, setNewPostData] = useState({
+    createdAt: new Date(),
     media: [],
     tags: [],
     caption: "",
@@ -29,6 +30,11 @@ export default function NewPostForm() {
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
+
+    setNewPostData((x) => ({
+      ...x,
+      createdAt: new Date(),
+    }));
 
     const { result, error } = await makePost(newPostData, user?.uid as string);
 
