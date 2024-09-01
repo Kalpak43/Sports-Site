@@ -1,6 +1,7 @@
 import {
   addDoc,
   collection,
+  deleteDoc,
   doc,
   getDoc,
   getDocs,
@@ -154,7 +155,7 @@ export async function makePost(post: PostData, uid: string) {
       ...post,
     });
 
-    const likesCollectionRef = collection(postDocRef, "posts");
+    const likesCollectionRef = collection(postDocRef, "likes");
     const initialLike = doc(likesCollectionRef, uid);
     await setDoc(initialLike, {
       createdAt: new Date().toISOString(),
@@ -228,7 +229,22 @@ export async function getSinglePost(id: string, uid: string) {
         ...postDoc.data(),
       } as PostData;
 
-      result.liked = await checkLiked(id, uid).then((res) => res.result);
+      result.liked = await checkLiked(id, uid)
+        .then((res) => res.result)
+        .catch((e) => {
+          throw e;
+        });
+
+      const userDoc = await getUserData(result.uid as string);
+
+      if (userDoc.error) {
+        throw userDoc.error;
+      }
+
+      if (userDoc.result) {
+        result.userHandle = userDoc.result.username;
+        result.userProfile = userDoc.result.profilePhoto;
+      }
     }
   } catch (e) {
     error = e as FirebaseError;
@@ -240,9 +256,6 @@ export async function getSinglePost(id: string, uid: string) {
 export async function likePost(id: string, uid: string) {
   let result: string | null = null,
     error: FirebaseError | null = null;
-
-  console.log("id", id);
-  console.log("uid", uid);
 
   try {
     const postRef = doc(db, "posts", id);
@@ -274,6 +287,27 @@ export async function checkLiked(id: string, uid: string) {
 
       result = likesDoc.exists();
     }
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function dislikePost(id: string, uid: string) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const postRef = doc(db, "posts", id);
+    const likesDocRef = doc(db, "posts", id, "likes", uid);
+    await deleteDoc(likesDocRef);
+    
+    await updateDoc(postRef, {
+      likes: increment(-1),
+    });
+
+    result = "Post disliked successfully!";
   } catch (e) {
     error = e as FirebaseError;
   }

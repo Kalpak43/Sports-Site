@@ -8,4 +8,6 @@ export interface PostData {
   comments: number;
   liked?: boolean;
   uid?: string;
+  userProfile?: string | null;
+  userHandle?: string;
 }

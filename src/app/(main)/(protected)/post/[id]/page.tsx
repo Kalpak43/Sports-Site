@@ -1,9 +1,10 @@
 "use client";
 
 import { useAuthContext } from "@/contexts/AuthContext";
-import { getSinglePost, likePost } from "@/firebase/db";
+import { dislikePost, getSinglePost, likePost } from "@/firebase/db";
 import { PostData } from "@/types/PostData";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { BiCommentDetail } from "react-icons/bi";
@@ -16,6 +17,7 @@ export default function PostPage() {
   const { id } = useParams();
   const [post, setPost] = React.useState<PostData | null>(null);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [likesDisabled, setLikesDisabled] = React.useState<boolean>(false);
 
   const carouselRef = React.useRef<HTMLDivElement>(null);
 
@@ -77,6 +79,50 @@ export default function PostPage() {
     }
   };
 
+  const handleDislike = async () => {
+    if (!user) router.push("/login");
+
+    const { result, error } = await dislikePost(
+      post?.id as string,
+      user?.uid as string
+    );
+
+    if (error) {
+      alert(error);
+    }
+
+    if (result) {
+      setPost((prev) => {
+        if (prev) {
+          return {
+            ...prev,
+            liked: false,
+            likes: prev.likes - 1,
+          };
+        }
+
+        return prev;
+      });
+    }
+  };
+
+  const handleLikeClick = async () => {
+    if (likesDisabled) return;
+
+    setLikesDisabled(true);
+
+    post && setTimeout(async () => {
+      try {
+        post.liked ? await handleDislike() : await handleLike();
+      } catch (error) {
+        alert(error);
+      } finally {
+        setLikesDisabled(false);
+      }
+    }, 1000);
+
+  }
+
   return (
     <div className="px-0 md:px-8 md:px-20 py-10 h-[90dvh]">
       {loading ? (
@@ -84,6 +130,19 @@ export default function PostPage() {
       ) : (
         post && (
           <div className="max-w-[400px] mx-auto space-y-2">
+            <Link
+              href={""}
+              className="btn btn-block btn-ghost h-fit rounded-full py-2 "
+            >
+              <Image
+                src={post?.media[0]}
+                alt="Post Media"
+                width={50}
+                height={50}
+                className="rounded-full aspect-square"
+              />
+              <p className="font-bold">{post.uid}</p>
+            </Link>
             <div className="w-full aspect-square overflow-hidden relative">
               <div ref={carouselRef} className="w-full h-full carousel ">
                 {post.media.map((m, index) => {
@@ -113,10 +172,15 @@ export default function PostPage() {
               </button>
             </div>
             <div className="py-2 flex gap-4">
-              <button className="text-center flex items-center gap-2" disabled={post.liked} onClick={() => {
-                handleLike();
-              }}>
-                <FaRegHeart size={30} className="text-[#ff00ff] text-[#ff00ff]" />
+              <button
+                className="text-center flex items-center gap-2"
+                onClick={handleLikeClick}
+                disabled={likesDisabled}
+              >
+                <FaRegHeart
+                  size={30}
+                  className={post.liked ? "text-[#ff00ff]" : "text-[#fff]"}
+                />
                 <span className="text-lg">{post.likes}</span>
               </button>
               <button className="text-center flex items-center gap-2">
