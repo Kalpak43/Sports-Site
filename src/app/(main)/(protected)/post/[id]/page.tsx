@@ -35,6 +35,7 @@ export default function PostPage() {
       }
 
       setPost(result);
+      result?.userProfile
       setLoading(false);
     };
 
@@ -111,37 +112,37 @@ export default function PostPage() {
 
     setLikesDisabled(true);
 
-    post && setTimeout(async () => {
-      try {
-        post.liked ? await handleDislike() : await handleLike();
-      } catch (error) {
-        alert(error);
-      } finally {
-        setLikesDisabled(false);
-      }
-    }, 1000);
-
-  }
+    post &&
+      setTimeout(async () => {
+        try {
+          post.liked ? await handleDislike() : await handleLike();
+        } catch (error) {
+          alert(error);
+        } finally {
+          setLikesDisabled(false);
+        }
+      }, 1000);
+  };
 
   return (
-    <div className="px-0 md:px-8 md:px-20 py-10 h-[90dvh]">
+    <div className="px-0 md:px-8 md:px-20 py-10 min-h-[90dvh]">
       {loading ? (
         <span className="block w-fit loading loading-spinner loading-lg mx-auto"></span>
       ) : (
         post && (
           <div className="max-w-[400px] mx-auto space-y-2">
             <Link
-              href={""}
+              href={"/user/" + post.userHandle}
               className="btn btn-block btn-ghost h-fit rounded-full py-2 "
             >
               <Image
-                src={post?.media[0]}
+                src={post.userProfile ? "data:image/png;base64," + post.userProfile : "/placeholder.jpeg"}
                 alt="Post Media"
                 width={50}
                 height={50}
-                className="rounded-full aspect-square"
+                className="rounded-full aspect-square object-cover"
               />
-              <p className="font-bold">{post.uid}</p>
+              <p className="font-bold">{post.userHandle}</p>
             </Link>
             <div className="w-full aspect-square overflow-hidden relative">
               <div ref={carouselRef} className="w-full h-full carousel ">
@@ -177,10 +178,14 @@ export default function PostPage() {
                 onClick={handleLikeClick}
                 disabled={likesDisabled}
               >
-                <FaRegHeart
-                  size={30}
-                  className={post.liked ? "text-[#ff00ff]" : "text-[#fff]"}
-                />
+                {likesDisabled ? (
+                  <span className="loading loading-spinner loading-md"></span>
+                ) : (
+                  <FaRegHeart
+                    size={30}
+                    className={post.liked ? "text-[#ff00ff]" : "text-[#fff]"}
+                  />
+                )}
                 <span className="text-lg">{post.likes}</span>
               </button>
               <button className="text-center flex items-center gap-2">

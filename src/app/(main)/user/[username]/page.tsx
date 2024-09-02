@@ -1,6 +1,7 @@
 "use client";
 
-import { searchUser } from "@/firebase/db";
+import DisplayPosts from "@/components/DisplayPosts";
+import { getAllPostsByUser, searchUser } from "@/firebase/db";
 import { UserData } from "@/types/UserData";
 import Image from "next/image";
 import { useParams } from "next/navigation";
@@ -17,7 +18,9 @@ export default function UserPage() {
     async function makeQuery() {
       if (username) {
         setLoading(true);
-        const { result, error } = await searchUser(username as string);
+        const { result, error } = await searchUser(
+          decodeURIComponent(username as string)
+        );
         if (error) {
           alert(error);
           return;
@@ -41,7 +44,11 @@ export default function UserPage() {
             <div>
               <div className="flex justify-center items-center">
                 <Image
-                  src={"data:image/png;base64," + result.profilePhoto}
+                  src={
+                    result.profilePhoto
+                      ? "data:image/png;base64," + result.profilePhoto
+                      : "/placeholder.jpeg"
+                  }
                   alt="Profile Picture"
                   width={100}
                   height={100}
@@ -76,6 +83,13 @@ export default function UserPage() {
                   </span>
                 );
               })}
+            </div>
+            <div className="p-8 border-2 border-gray-600 rounded-3xl grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
+              <DisplayPosts
+                getPosts={() => {
+                  return getAllPostsByUser(result.uid as string);
+                }}
+              />
             </div>
           </div>
         </>

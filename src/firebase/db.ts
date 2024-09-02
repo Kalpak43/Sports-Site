@@ -115,7 +115,10 @@ export async function searchUser(searchQuery: string) {
     const q = query(usersRef, where("username", "==", searchQuery));
     const querySnapshot = await getDocs(q);
     querySnapshot.forEach((doc) => {
-      result = doc.data() as UserData;
+      result = {
+        uid: doc.id,
+        ...doc.data(),
+      } as UserData;
     });
   } catch (e) {
     error = e as FirebaseError;
@@ -155,11 +158,11 @@ export async function makePost(post: PostData, uid: string) {
       ...post,
     });
 
-    const likesCollectionRef = collection(postDocRef, "likes");
-    const initialLike = doc(likesCollectionRef, uid);
-    await setDoc(initialLike, {
-      createdAt: new Date().toISOString(),
-    });
+    // const likesCollectionRef = collection(postDocRef, "likes");
+    // const initialLike = doc(likesCollectionRef, uid);
+    // await setDoc(initialLike, {
+    //   createdAt: new Date().toISOString(),
+    // });
 
     result = "Post made successfully!";
   } catch (e) {
@@ -302,7 +305,7 @@ export async function dislikePost(id: string, uid: string) {
     const postRef = doc(db, "posts", id);
     const likesDocRef = doc(db, "posts", id, "likes", uid);
     await deleteDoc(likesDocRef);
-    
+
     await updateDoc(postRef, {
       likes: increment(-1),
     });

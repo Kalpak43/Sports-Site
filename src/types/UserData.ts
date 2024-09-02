@@ -1,4 +1,5 @@
 export interface UserData {
+  uid?: string;
   address: string;
   bio: string;
   city: string;
