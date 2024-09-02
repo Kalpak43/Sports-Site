@@ -97,6 +97,9 @@ This project is licensed under the MIT License.
 <!-- TREE STRUCTURE END -->
 
 <!-- TREE STRUCTURE START -->
+<!-- TREE STRUCTURE END -->
+
+<!-- TREE STRUCTURE START -->
 ```bash
 .
 ├── README.md
@@ -128,7 +131,12 @@ This project is licensed under the MIT License.
 │   │   │       └── page.tsx
 │   │   ├── (main)
 │   │   │   ├── (protected)
+│   │   │   │   ├── feed
+│   │   │   │   │   └── page.tsx
 │   │   │   │   ├── layout.tsx
+│   │   │   │   ├── post
+│   │   │   │   │   └── [id]
+│   │   │   │   │       └── page.tsx
 │   │   │   │   └── profile
 │   │   │   │       ├── edit
 │   │   │   │       │   └── page.tsx
@@ -156,7 +164,9 @@ This project is licensed under the MIT License.
 │   │   │   └── index.tsx
 │   │   ├── SearchBar
 │   │   │   └── SearchBar.tsx
-│   │   └── SignupForm
+│   │   ├── SignupForm
+│   │   │   └── index.tsx
+│   │   └── TestComponent
 │   │       └── index.tsx
 │   ├── contexts
 │   │   ├── AuthContext.tsx
@@ -178,6 +188,6 @@ This project is licensed under the MIT License.
 ├── tree_output.txt
 └── tsconfig.json
 
-29 directories, 49 files
+33 directories, 52 files
 ```
 <!-- TREE STRUCTURE END -->
