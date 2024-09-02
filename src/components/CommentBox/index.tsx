@@ -38,7 +38,7 @@ export default function CommentBox({
       <span className="loading loading-spinner loading-md"></span>
     </div>
   ) : (
-    <div className="space-y-2 divide-y-2 divide-neutral">
+    <>
       {comments.map((comment) => (
         <div key={comment.cid} className="space-y-2 py-2">
           <div className="flex gap-2 items-center">
@@ -54,6 +54,6 @@ export default function CommentBox({
           <p className="">{comment.comment}</p>
         </div>
       ))}
-    </div>
+    </>
   );
 }

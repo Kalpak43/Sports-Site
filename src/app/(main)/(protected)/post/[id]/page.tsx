@@ -174,111 +174,117 @@ export default function PostPage() {
         <span className="block w-fit loading loading-spinner loading-lg mx-auto"></span>
       ) : (
         post && (
-          <div className="max-w-[400px] mx-auto space-y-2">
-            <Link
-              href={"/user/" + post.userHandle}
-              className="btn btn-block btn-outline h-fit rounded-full py-2 "
-            >
-              <Image
-                src={
-                  post.userProfile
-                    ? "data:image/png;base64," + post.userProfile
-                    : "/placeholder.jpeg"
-                }
-                alt="Post Media"
-                width={50}
-                height={50}
-                className="rounded-full aspect-square object-cover"
-              />
-              <p className="font-bold">{post.userHandle}</p>
-            </Link>
-            <div className="w-full aspect-square overflow-hidden relative">
-              <div ref={carouselRef} className="w-full h-full carousel ">
-                {post.media.map((m, index) => {
-                  return (
-                    <Image
-                      key={index}
-                      src={m}
-                      alt="Post Media"
-                      width={1000}
-                      height={1000}
-                      className="carousel-item w-full h-full object-cover rounded-2xl"
-                    />
-                  );
-                })}
-              </div>
-              <button
-                onClick={() => handleCarousel("right")}
-                className="absolute top-0 bottom-0 mx-2 right-0 my-auto z-50"
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mx-auto space-y-2 max-w-[800px]">
+            <div className="space-y-2">
+              <Link
+                href={"/user/" + post.userHandle}
+                className="btn btn-block btn-outline h-fit rounded-full py-2 "
               >
-                <FaChevronRight size={30} className="text-[#fff]" />
-              </button>
-              <button
-                onClick={() => handleCarousel("left")}
-                className="absolute top-0 bottom-0 mx-2 left-0 my-auto z-50"
-              >
-                <FaChevronLeft size={30} className="text-[#fff]" />
-              </button>
-            </div>
-            <div className="py-2 flex gap-4">
-              <button
-                className="text-center flex items-center gap-2"
-                onClick={handleLikeClick}
-                disabled={likesDisabled}
-              >
-                {likesDisabled ? (
-                  <span className="loading loading-spinner loading-md"></span>
-                ) : (
-                  <FaRegHeart
-                    size={30}
-                    className={post.liked ? "text-[#ff00ff]" : "text-[#fff]"}
-                  />
-                )}
-                <span className="text-lg">{post.likes}</span>
-              </button>
-              <button className="text-center flex items-center gap-2">
-                <BiCommentDetail size={30} className="text-[#fff]" />
-                <span className="text-lg">{post.comments}</span>
-              </button>
-            </div>
-            <p>
-              <span className="font-bold">Caption: </span>
-              {post.caption}
-            </p>
-            <p className="font-bold">Comments:</p>
-            {user && isProfileCreated && (
-              <form
-                action=""
-                onSubmit={(e) => {
-                  e.preventDefault();
-                  handleComment();
-                }}
-              >
-                <input
-                  type="text"
-                  placeholder="Type here"
-                  className="input input-bordered w-full"
-                  value={commentInput}
-                  onChange={(e) => setCommentInput(e.target.value)}
+                <Image
+                  src={
+                    post.userProfile
+                      ? "data:image/png;base64," + post.userProfile
+                      : "/placeholder.jpeg"
+                  }
+                  alt="Post Media"
+                  width={50}
+                  height={50}
+                  className="rounded-full aspect-square object-cover"
                 />
+                <p className="font-bold">{post.userHandle}</p>
+              </Link>
+              <div className="w-full aspect-square overflow-hidden relative">
+                <div ref={carouselRef} className="w-full h-full carousel ">
+                  {post.media.map((m, index) => {
+                    return (
+                      <Image
+                        key={index}
+                        src={m}
+                        alt="Post Media"
+                        width={1000}
+                        height={1000}
+                        className="carousel-item w-full h-full object-cover rounded-2xl"
+                      />
+                    );
+                  })}
+                </div>
                 <button
-                  className="btn btn-primary btn-block mt-2"
-                  disabled={commentLoading}
+                  onClick={() => handleCarousel("right")}
+                  className="absolute top-0 bottom-0 mx-2 right-0 my-auto z-50"
                 >
-                  {commentLoading ? (
-                    <span className="loading loading-spinner loading-sm"></span>
-                  ) : (
-                    "Comment"
-                  )}
+                  <FaChevronRight size={30} className="text-[#fff]" />
                 </button>
-              </form>
-            )}
-            <div className="p-4 border-2 border-neutral rounded-2xl">
-              <CommentBox
-                id={post.id as string}
-                refresh={refresh}
-                setRefresh={setRefresh}
-              />
+                <button
+                  onClick={() => handleCarousel("left")}
+                  className="absolute top-0 bottom-0 mx-2 left-0 my-auto z-50"
+                >
+                  <FaChevronLeft size={30} className="text-[#fff]" />
+                </button>
+              </div>
+              <div className="py-2 flex gap-4">
+                <button
+                  className="text-center flex items-center gap-2"
+                  onClick={handleLikeClick}
+                  disabled={likesDisabled}
+                >
+                  {likesDisabled ? (
+                    <span className="loading loading-spinner loading-md"></span>
+                  ) : (
+                    <FaRegHeart
+                      size={30}
+                      className={post.liked ? "text-[#ff00ff]" : "text-[#fff]"}
+                    />
+                  )}
+                  <span className="text-lg">{post.likes}</span>
+                </button>
+                <button className="text-center flex items-center gap-2">
+                  <BiCommentDetail size={30} className="text-[#fff]" />
+                  <span className="text-lg">{post.comments}</span>
+                </button>
+              </div>
+              <p>
+                <span className="font-bold">Caption: </span>
+                {post.caption}
+              </p>
+            </div>
+            <div className="relative h-full">
+              <div className="lg:absolute inset-0 space-y-2 border-2 border-neutral rounded-2xl p-4 flex flex-col">
+                <p className="font-bold">Comments:</p>
+                {user && isProfileCreated && (
+                  <form
+                    action=""
+                    onSubmit={(e) => {
+                      e.preventDefault();
+                      handleComment();
+                    }}
+                  >
+                    <input
+                      type="text"
+                      placeholder="Type here"
+                      className="input input-bordered w-full"
+                      value={commentInput}
+                      onChange={(e) => setCommentInput(e.target.value)}
+                    />
+                    <button
+                      className="btn btn-primary btn-block mt-2"
+                      disabled={commentLoading}
+                    >
+                      {commentLoading ? (
+                        <span className="loading loading-spinner loading-sm"></span>
+                      ) : (
+                        "Comment"
+                      )}
+                    </button>
+                  </form>
+                )}
+                <div className="p-4 space-y-2 divide-y-2 divide-neutral flex-1 overflow-y-scroll">
+                  <CommentBox
+                    id={post.id as string}
+                    refresh={refresh}
+                    setRefresh={setRefresh}
+                  />
+                </div>
+              </div>
             </div>
           </div>
         )
