@@ -106,6 +106,9 @@ This project is licensed under the MIT License.
 <!-- TREE STRUCTURE END -->
 
 <!-- TREE STRUCTURE START -->
+<!-- TREE STRUCTURE END -->
+
+<!-- TREE STRUCTURE START -->
 ```bash
 .
 ├── README.md
@@ -156,6 +159,8 @@ This project is licensed under the MIT License.
 │   │   ├── globals.css
 │   │   └── layout.tsx
 │   ├── components
+│   │   ├── CommentBox
+│   │   │   └── index.tsx
 │   │   ├── DisplayPosts
 │   │   │   └── index.tsx
 │   │   ├── LoginForm
@@ -182,6 +187,7 @@ This project is licensed under the MIT License.
 │   │   └── storage.ts
 │   ├── types
 │   │   ├── AuthData.ts
+│   │   ├── CommentData.ts
 │   │   ├── PostData.ts
 │   │   ├── SignUpData.ts
 │   │   └── UserData.ts
@@ -192,6 +198,6 @@ This project is licensed under the MIT License.
 ├── tree_output.txt
 └── tsconfig.json
 
-32 directories, 51 files
+33 directories, 53 files
 ```
 <!-- TREE STRUCTURE END -->
