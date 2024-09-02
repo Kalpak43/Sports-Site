@@ -24,6 +24,8 @@ import {
   StorageReference,
 } from "firebase/storage";
 
+
+// User functions
 export async function uploadSignupData(signUpData: SignUpData, uid: string) {
   let result: string | null = null,
     error: FirebaseError | null = null;
@@ -127,6 +129,7 @@ export async function searchUser(searchQuery: string) {
   return { result, error };
 }
 
+// Post functions
 export async function makePost(post: PostData, uid: string) {
   let result: string | null = null,
     error: FirebaseError | null = null;
@@ -256,6 +259,7 @@ export async function getSinglePost(id: string, uid: string) {
   return { result, error };
 }
 
+// like and dislike post
 export async function likePost(id: string, uid: string) {
   let result: string | null = null,
     error: FirebaseError | null = null;
@@ -312,6 +316,54 @@ export async function dislikePost(id: string, uid: string) {
 
     result = "Post disliked successfully!";
   } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+// comment functions
+export async function addComment(id: string, comment: CommentData) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const postRef = doc(db, "posts", id);
+    const commentsCollectionRef = collection(postRef, "comments");
+
+    await addDoc(commentsCollectionRef, {
+      ...comment,
+    });
+
+    await updateDoc(postRef, {
+      comments: increment(1),
+    });
+
+    result = "Comment added successfully!";
+
+  } catch(e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function getComments(id: string) {
+  let result: CommentData[] = [],
+    error: FirebaseError | null = null;
+
+  try {
+    const postRef = doc(db, "posts", id);
+    const commentsCollectionRef = collection(postRef, "comments");
+    const querySnapshot = await getDocs(commentsCollectionRef);
+
+    querySnapshot.forEach((doc) => {
+      result.push({
+        cid: doc.id,
+        ...doc.data(),
+      } as CommentData);
+    });
+  } catch(e) {
     error = e as FirebaseError;
   }
 
