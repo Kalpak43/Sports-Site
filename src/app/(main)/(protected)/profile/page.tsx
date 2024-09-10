@@ -45,6 +45,20 @@ export default function ProfilePage() {
             {userData?.city}, {userData?.state}
           </p>
         </div>
+        <div className="flex justify-center gap-4">
+          <div className="w-fit text-center">
+            <p className="text-sm font-bold ">Followers</p>
+            <Link href={""} className="btn btn-square btn-ghost">
+              {String(userData?.followers || 0)}
+            </Link>
+          </div>
+          <div className="w-fit text-center">
+            <p className="text-sm font-bold ">Following</p>
+            <Link href={""} className="btn btn-square btn-ghost">
+              {String(userData?.following || 0)}
+            </Link>
+          </div>
+        </div>
       </div>
       <div className="w-full space-y-8 relative lg:col-span-2">
         <div className="p-8 border-2 border-gray-600 rounded-3xl flex gap-2 flex-wrap justify-center">
@@ -60,7 +74,10 @@ export default function ProfilePage() {
           })}
         </div>
         <div className="p-8 border-2 border-gray-600 rounded-3xl grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-4">
-          <Link href={"?new_post=true"} className="group py-2 lg:aspect-square flex flex-col items-center justify-center border-2 border-primary rounded-2xl">
+          <Link
+            href={"?new_post=true"}
+            className="group py-2 lg:aspect-square flex flex-col items-center justify-center border-2 border-primary rounded-2xl"
+          >
             <span className="block w-fit mx-auto p-2 rounded-full  group-hover:bg-primary transition-all duration-200">
               <FaPlus
                 size={30}
@@ -69,9 +86,11 @@ export default function ProfilePage() {
             </span>
             New Post
           </Link>
-          <DisplayPosts getPosts={() => {
-            return getAllPostsByUser(user?.uid as string);
-          }} />
+          <DisplayPosts
+            getPosts={() => {
+              return getAllPostsByUser(user?.uid as string);
+            }}
+          />
         </div>
       </div>
     </div>

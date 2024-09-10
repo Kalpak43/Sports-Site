@@ -24,7 +24,6 @@ import {
   StorageReference,
 } from "firebase/storage";
 
-
 // User functions
 export async function uploadSignupData(signUpData: SignUpData, uid: string) {
   let result: string | null = null,
@@ -340,8 +339,7 @@ export async function addComment(id: string, comment: CommentData) {
     });
 
     result = "Comment added successfully!";
-
-  } catch(e) {
+  } catch (e) {
     error = e as FirebaseError;
   }
 
@@ -363,7 +361,95 @@ export async function getComments(id: string) {
         ...doc.data(),
       } as CommentData);
     });
-  } catch(e) {
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+// following system
+
+export async function followUser(uid: string, followerUid: string) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const userRef = doc(db, "users", uid);
+    const followersCollectionRef = collection(userRef, "followers");
+
+    const followerRef = doc(db, "users", followerUid);
+    const followingCollectionRef = collection(followerRef, "following");
+
+    // add doc with id of followerUid
+    await setDoc(doc(followersCollectionRef, followerUid), {
+      createdAt: new Date().toISOString(),
+    });
+
+    await setDoc(doc(followingCollectionRef, uid), {
+      createdAt: new Date().toISOString(),
+    });
+
+    await updateDoc(userRef, {
+      followers: increment(1),
+    });
+
+    await updateDoc(followerRef, {
+      following: increment(1),
+    });
+
+    result = "Followed successfully!";
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function checkFollow(uid: string, followingUid: string) {
+  let result: boolean = false,
+    error: FirebaseError | null = null;
+
+  try {
+    const userRef = doc(db, "users", uid);
+
+    const followingCollectionRef = collection(userRef, "following");
+    const followingDocRef = doc(followingCollectionRef, followingUid);
+
+    const followingDoc = await getDoc(followingDocRef);
+    console.log(followingDoc);
+    result = followingDoc.exists();
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function unfollowUser(uid: string, followerUid: string) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const userRef = doc(db, "users", uid);
+    const followersCollectionRef = collection(userRef, "followers");
+
+    const followerRef = doc(db, "users", followerUid);
+    const followingCollectionRef = collection(followerRef, "following");
+
+    await deleteDoc(doc(followersCollectionRef, followerUid));
+    await deleteDoc(doc(followingCollectionRef, uid));
+
+    await updateDoc(userRef, {
+      followers: increment(-1),
+    });
+
+    await updateDoc(followerRef, {
+      following: increment(-1),
+    });
+
+    result = "Unfollowed successfully!";
+  } catch (e) {
     error = e as FirebaseError;
   }
 

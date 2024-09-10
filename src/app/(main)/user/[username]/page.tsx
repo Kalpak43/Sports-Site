@@ -1,18 +1,30 @@
 "use client";
 
 import DisplayPosts from "@/components/DisplayPosts";
-import { getAllPostsByUser, searchUser } from "@/firebase/db";
+import { useAuthContext } from "@/contexts/AuthContext";
+import {
+  checkFollow,
+  followUser,
+  getAllPostsByUser,
+  searchUser,
+  unfollowUser,
+} from "@/firebase/db";
 import { UserData } from "@/types/UserData";
 import Image from "next/image";
+import Link from "next/link";
 import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { FaCakeCandles, FaLocationArrow, FaPlus } from "react-icons/fa6";
+import { BsChatLeftTextFill } from "react-icons/bs";
 
 export default function UserPage() {
   const { username } = useParams();
+  const { user, isProfileCreated } = useAuthContext();
   const [search, setSearch] = React.useState<string | null>(null);
   const [result, setResult] = React.useState<UserData | null>(null);
+  const [isFollowing, setIsFollowing] = React.useState<boolean>(false);
   const [loading, setLoading] = React.useState<boolean>(false);
+  const [followLoading, setFollowLoading] = React.useState<boolean>(false);
 
   useEffect(() => {
     async function makeQuery() {
@@ -33,6 +45,66 @@ export default function UserPage() {
 
     makeQuery();
   }, [search]);
+
+  useEffect(() => {
+    async function checkFollowing() {
+      await checkFollow(user?.uid as string, result?.uid as string).then(
+        (res) => {
+          setIsFollowing(res.result);
+        }
+      );
+    }
+
+    result && checkFollowing();
+  }, [result]);
+
+  const handleFollow = async () => {
+    setFollowLoading(true);
+    await followUser(result?.uid as string, user?.uid as string)
+      .then(() => {
+        setIsFollowing(true);
+        setResult((prevState) => {
+          if (prevState) {
+            return {
+              ...prevState,
+              followers: Number(prevState.followers) + 1,
+            };
+          }
+          return prevState;
+        });
+        alert("Followed!");
+      })
+      .catch((error) => {
+        alert(error);
+      })
+      .finally(() => {
+        setFollowLoading(false);
+      });
+  };
+
+  const handleUnfollow = async () => {
+    setFollowLoading(true);
+    await unfollowUser(result?.uid as string, user?.uid as string)
+      .then(() => {
+        setIsFollowing(false);
+        setResult((prevState) => {
+          if (prevState) {
+            return {
+              ...prevState,
+              followers: Number(prevState.followers) - 1,
+            };
+          }
+          return prevState;
+        });
+        alert("Unfollowed!");
+      })
+      .catch((error) => {
+        alert(error);
+      })
+      .finally(() => {
+        setFollowLoading(false);
+      });
+  };
 
   return (
     <div className="px-0 md:px-8 md:px-20 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -70,6 +142,61 @@ export default function UserPage() {
                 {result.city}, {result.state}
               </p>
             </div>
+
+            <div>
+              <div className="flex justify-center gap-4">
+                <div className="w-fit text-center">
+                  <p className="text-sm font-bold ">Followers</p>
+                  <Link href={""} className="btn btn-square btn-ghost">
+                    {String(result.followers || 0)}
+                  </Link>
+                </div>
+                <div className="w-fit text-center">
+                  <p className="text-sm font-bold ">Following</p>
+                  <Link href={""} className="btn btn-square btn-ghost">
+                    {String(result.following || 0)}
+                  </Link>
+                </div>
+              </div>
+              <div className="flex justify-center gap-4">
+                <Link
+                  href={"/chat"}
+                  className="btn btn-square btn-ghost text-center"
+                >
+                  <BsChatLeftTextFill size={24} />
+                </Link>
+              </div>
+            </div>
+
+            {user &&
+              isProfileCreated &&
+              (isFollowing ? (
+                <button
+                  className="btn btn-primary btn-block mt-2"
+                  onClick={handleUnfollow}
+                  disabled={followLoading}
+                >
+                  {followLoading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    "Unfollow"
+                  )}
+                </button>
+              ) : (
+                <button
+                  className="btn btn-primary btn-block mt-2"
+                  onClick={handleFollow}
+                  disabled={followLoading}
+                >
+                  {followLoading ? (
+                    <span className="loading loading-spinner loading-sm"></span>
+                  ) : (
+                    <>
+                      <FaPlus className="inline" /> Follow
+                    </>
+                  )}
+                </button>
+              ))}
           </div>
           <div className="w-full space-y-8 relative lg:col-span-2">
             <div className="p-8 border-2 border-gray-600 rounded-3xl flex gap-2 flex-wrap justify-center">

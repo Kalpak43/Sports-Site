@@ -26,7 +26,7 @@ export default function PostPage() {
   const [likesDisabled, setLikesDisabled] = React.useState<boolean>(false);
   const [commentInput, setCommentInput] = React.useState<string>("");
   const [commentLoading, setCommentLoading] = React.useState<boolean>(false);
-  const [refresh, setRefresh] = React.useState<boolean>(false);
+  const [refresh, setRefresh] = React.useState<boolean>(true);
 
   const carouselRef = React.useRef<HTMLDivElement>(null);
 
@@ -138,7 +138,7 @@ export default function PostPage() {
 
     const tempComment: CommentData = {
       uid: user?.uid as string,
-      userHandle: userData?.name as string,
+      userHandle: userData?.username as string,
       userProfile: userData?.profilePhoto as string,
       comment: commentInput,
       createdAt: new Date().toISOString(),

@@ -2,6 +2,7 @@
 
 import { getComments } from "@/firebase/db";
 import Image from "next/image";
+import Link from "next/link";
 import React, { useEffect, useState } from "react";
 
 export default function CommentBox({
@@ -27,10 +28,10 @@ export default function CommentBox({
 
       setComments(result);
       setRefresh(false);
-        setLoading(false);
+      setLoading(false);
     };
 
-    populateComments();
+    refresh && populateComments();
   }, [refresh]);
 
   return loading ? (
@@ -41,7 +42,7 @@ export default function CommentBox({
     <>
       {comments.map((comment) => (
         <div key={comment.cid} className="space-y-2 py-2">
-          <div className="flex gap-2 items-center">
+          <Link href={`/user/${comment.userHandle}`} className="flex gap-2 items-center">
             <Image
               src={"data:image/png;base64," + comment.userProfile}
               alt={comment.userHandle}
@@ -50,7 +51,7 @@ export default function CommentBox({
               className="rounded-full aspect-square object-cover max-w-[30px]"
             />
             <p className="text-xs font-bold">{comment.userHandle}</p>
-          </div>
+          </Link>
           <p className="">{comment.comment}</p>
         </div>
       ))}

@@ -10,4 +10,6 @@ export interface UserData {
   profilePhoto: string | null;
   state: string;
   username: string;
+  followers: Number;
+  following: Number;
 }
