@@ -97,9 +97,31 @@ This project is licensed under the MIT License.
 <!-- TREE STRUCTURE END -->
 
 <!-- TREE STRUCTURE START -->
+<!-- TREE STRUCTURE END -->
+
+<!-- TREE STRUCTURE START -->
 ```bash
 .
 ├── README.md
+├── firebase
+│   ├── firebase.json
+│   ├── functions
+│   │   ├── lib
+│   │   │   ├── index.js
+│   │   │   ├── index.js.map
+│   │   │   └── requests
+│   │   │       ├── getUserDoc.js
+│   │   │       └── getUserDoc.js.map
+│   │   ├── package-lock.json
+│   │   ├── package.json
+│   │   ├── src
+│   │   │   ├── index.ts
+│   │   │   └── requests
+│   │   │       └── getUserDoc.ts
+│   │   ├── tsconfig.dev.json
+│   │   ├── tsconfig.json
+│   │   └── ui-debug.log
+│   └── ui-debug.log
 ├── next-env.d.ts
 ├── next.config.mjs
 ├── package-lock.json
@@ -186,6 +208,6 @@ This project is licensed under the MIT License.
 ├── tree_output.txt
 └── tsconfig.json
 
-33 directories, 53 files
+39 directories, 66 files
 ```
 <!-- TREE STRUCTURE END -->
