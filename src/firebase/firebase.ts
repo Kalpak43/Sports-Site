@@ -3,7 +3,6 @@ import { getAuth } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { getStorage } from "firebase/storage";
 import { getPerformance } from "firebase/performance";
-import { getFunctions, connectFunctionsEmulator } from "firebase/functions";
 
 const firebaseConfig = {
   apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -19,7 +18,5 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const storage = getStorage();
 const db = getFirestore();
-const functions = getFunctions(app);
-connectFunctionsEmulator(functions, "localhost", 5001);
 
-export { app, auth, storage, db, functions };
+export { app, auth, storage, db };

@@ -11,7 +11,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db, functions, storage } from "./firebase";
+import { db, storage } from "./firebase";
 import { FirebaseError } from "firebase/app";
 import { UserData } from "@/types/UserData";
 import { PostData } from "@/types/PostData";
@@ -22,7 +22,6 @@ import {
   ref,
   StorageReference,
 } from "firebase/storage";
-import { httpsCallable } from "firebase/functions";
 
 // User functions
 export async function uploadSignupData(signUpData: SignUpData, uid: string) {
