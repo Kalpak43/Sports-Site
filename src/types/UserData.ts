@@ -1,4 +1,4 @@
-interface UserData {
+export interface UserData {
   uid?: string;
   address: string;
   bio: string;

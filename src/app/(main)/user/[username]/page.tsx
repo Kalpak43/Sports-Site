@@ -7,20 +7,18 @@ import {
   followUser,
   getAllPostsByUser,
   searchUser,
-  setupChat,
   unfollowUser,
 } from "@/firebase/db";
+import { UserData } from "@/types/UserData";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { useParams } from "next/navigation";
 import React, { useEffect } from "react";
 import { FaCakeCandles, FaLocationArrow, FaPlus } from "react-icons/fa6";
 import { BsChatLeftTextFill } from "react-icons/bs";
-import Button from "@/components/Button/Button";
 
 export default function UserPage() {
   const { username } = useParams();
-  const router = useRouter();
   const { user, isProfileCreated } = useAuthContext();
   const [search, setSearch] = React.useState<string | null>(null);
   const [result, setResult] = React.useState<UserData | null>(null);
@@ -161,21 +159,12 @@ export default function UserPage() {
                 </div>
               </div>
               <div className="flex justify-center gap-4">
-                <Button
+                <Link
+                  href={"/chat"}
                   className="btn btn-square btn-ghost text-center"
-                  onClick={async () => {
-                    await setupChat(user?.uid as string, result.uid as string)
-                      .then((res) => {
-                        if(res.error) {
-                          alert(res.error);
-                          return;
-                        }
-                        router.push(`/chat/${res.result?.id}`);
-                      })
-                  }}
                 >
                   <BsChatLeftTextFill size={24} />
-                </Button>
+                </Link>
               </div>
             </div>
 
