@@ -11,7 +11,7 @@ import {
   updateDoc,
   where,
 } from "firebase/firestore";
-import { db, storage } from "./firebase";
+import { db, functions, storage } from "./firebase";
 import { FirebaseError } from "firebase/app";
 import { mediaUpload } from "./storage";
 import {
@@ -20,6 +20,7 @@ import {
   ref,
   StorageReference,
 } from "firebase/storage";
+import { httpsCallable } from "firebase/functions";
 
 // User functions
 export async function uploadSignupData(signUpData: SignUpData, uid: string) {
@@ -453,68 +454,69 @@ export async function unfollowUser(uid: string, followerUid: string) {
   return { result, error };
 }
 
-// Chat sysytem
-export async function createChat(uid1: string, uid2: string) {
-  let result: ChatData | null = null,
-    error: FirebaseError | null = null;
+// // Chat sysytem
+// export async function createChat(uid1: string, uid2: string) {
+//   let result: ChatData | null = null,
+//     error: FirebaseError | null = null;
 
-  try {
-    const chatsCollectionRef = collection(db, "chats");
-    const chatDocRef = await addDoc(chatsCollectionRef, {
-      createdAt: new Date().toISOString(),
-      members: [uid1, uid2],
-    });
+//   try {
+//     const chatsCollectionRef = collection(db, "chats");
+//     const chatDocRef = await addDoc(chatsCollectionRef, {
+//       createdAt: new Date().toISOString(),
+//       members: [uid1, uid2],
+//     });
 
-    result = {
-      id: chatDocRef.id,
-      createdAt: new Date(),
-      members: [uid1, uid2],
-    };
-  } catch (e) {
-    error = e as FirebaseError;
-  }
+//     result = {
+//       id: chatDocRef.id,
+//       createdAt: new Date(),
+//       members: [uid1, uid2],
+//     };
+//   } catch (e) {
+//     error = e as FirebaseError;
+//   }
 
-  return { result, error };
-}
+//   return { result, error };
+// }
 
-export async function getChat(uid1: string, uid2: string) {
-  let result: ChatData | null = null,
-    error: FirebaseError | null = null;
+// export async function getChat(uid1: string, uid2: string) {
+//   let result: ChatData | null = null,
+//     error: FirebaseError | null = null;
 
-  try {
+//   try {
 
-    const chatsCollectionRef = collection(db, "chats");
-    const q = query(
-      chatsCollectionRef,
-      where("members", "array-contains-any", [uid1, uid2])
-    );
-    
-    const querySnapshot = await getDocs(q);
+//     const chatsCollectionRef = collection(db, "chats");
+//     const q = query(
+//       chatsCollectionRef,
+//       where("members", "array-contains-any", [uid1, uid2])
+//     );
 
-    result = {
-      id: querySnapshot.docs[0].id,
-      ...querySnapshot.docs[0].data(),
-    } as ChatData;
-  } catch (e) {
-    error = e as FirebaseError;
-  }
+//     const querySnapshot = await getDocs(q);
 
-  return { result, error };
-}
+//     result = {
+//       id: querySnapshot.docs[0].id,
+//       ...querySnapshot.docs[0].data(),
+//     } as ChatData;
+//   } catch (e) {
+//     error = e as FirebaseError;
+//   }
+
+//   return { result, error };
+// }
 
 export async function setupChat(uid1: string, uid2: string) {
   let result: ChatData | null = null,
     error: FirebaseError | null = null;
 
   try {
-    result = await getChat(uid1, uid2)
-      .then((res) => res.result);
+    const getChat = httpsCallable(functions, "getChat");
 
-    if (!result) {
-      result = await createChat(uid1, uid2)
-        .then((res) => res.result);
+    const res = await getChat({ uid1, uid2 });
+    if (res) {
+      console.log(res);
+      result = res.data as ChatData;
     }
   } catch (e) {
+    console.log(e);
     error = e as FirebaseError;
   }
 
