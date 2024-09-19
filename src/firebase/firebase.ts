@@ -18,6 +18,5 @@ const app = initializeApp(firebaseConfig);
 const auth = getAuth();
 const storage = getStorage();
 const db = getFirestore();
-const perf = getPerformance(app);
 
-export { app, auth, storage, db, perf };
+export { app, auth, storage, db };

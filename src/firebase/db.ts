@@ -12,10 +12,7 @@ import {
   where,
 } from "firebase/firestore";
 import { db, storage } from "./firebase";
-import { SignUpData } from "@/types/SignUpData";
 import { FirebaseError } from "firebase/app";
-import { UserData } from "@/types/UserData";
-import { PostData } from "@/types/PostData";
 import { mediaUpload } from "./storage";
 import {
   deleteObject,
@@ -449,6 +446,74 @@ export async function unfollowUser(uid: string, followerUid: string) {
     });
 
     result = "Unfollowed successfully!";
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+// Chat sysytem
+export async function createChat(uid1: string, uid2: string) {
+  let result: ChatData | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const chatsCollectionRef = collection(db, "chats");
+    const chatDocRef = await addDoc(chatsCollectionRef, {
+      createdAt: new Date().toISOString(),
+      members: [uid1, uid2],
+    });
+
+    result = {
+      id: chatDocRef.id,
+      createdAt: new Date(),
+      members: [uid1, uid2],
+    };
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function getChat(uid1: string, uid2: string) {
+  let result: ChatData | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+
+    const chatsCollectionRef = collection(db, "chats");
+    const q = query(
+      chatsCollectionRef,
+      where("members", "array-contains-any", [uid1, uid2])
+    );
+    
+    const querySnapshot = await getDocs(q);
+
+    result = {
+      id: querySnapshot.docs[0].id,
+      ...querySnapshot.docs[0].data(),
+    } as ChatData;
+  } catch (e) {
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function setupChat(uid1: string, uid2: string) {
+  let result: ChatData | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    result = await getChat(uid1, uid2)
+      .then((res) => res.result);
+
+    if (!result) {
+      result = await createChat(uid1, uid2)
+        .then((res) => res.result);
+    }
   } catch (e) {
     error = e as FirebaseError;
   }

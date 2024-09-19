@@ -1,12 +1,13 @@
 
 
-const admin = require('firebase-admin');
-
-admin.initializeApp();
-
-export const getUserDoc = async (uid: string) => {
-    const db = admin.firestore();
+export const getUserDoc = async (app: any ,uid: string) => {
+    const db = app.firestore();
     const doc = await db.collection('users').doc(uid).get();
 
     return doc.data();
 }
+
+
+
+
+

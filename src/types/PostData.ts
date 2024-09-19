@@ -1,4 +1,4 @@
-export interface PostData {
+interface PostData {
   id?: string;
   createdAt: Date;
   media: string[];
