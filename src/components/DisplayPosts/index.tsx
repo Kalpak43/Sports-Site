@@ -1,6 +1,5 @@
 
 
-import { PostData } from "@/types/PostData";
 import { FirebaseError } from "firebase/app";
 import Image from "next/image";
 import React, { useEffect } from "react";

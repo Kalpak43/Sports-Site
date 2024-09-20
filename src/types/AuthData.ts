@@ -1,7 +1,7 @@
 import { User } from "firebase/auth";
 
 
-interface AuthData {
+export interface AuthData {
   user: User | null;
   loading: boolean;
   isProfileCreated: boolean;

@@ -2,7 +2,6 @@
 import { useAuthContext } from "@/contexts/AuthContext";
 import { useSignUpDataContext } from "@/contexts/SignupDataContext";
 import { uploadSignupData } from "@/firebase/db";
-import { SignUpData } from "@/types/SignUpData";
 import { useRouter } from "next/navigation";
 import React, { useState } from "react";
 
@@ -75,7 +74,7 @@ export default function Preferences() {
                   : "btn-outline btn-secondary"
               }`}
               onClick={() => {
-                setSignUpData?.((prev) => {
+                setSignUpData?.((prev: SignUpData) => {
                   if (prev.preferences.includes(sport)) {
                     return {
                       ...prev,

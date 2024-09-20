@@ -21,6 +21,7 @@ import {
   StorageReference,
 } from "firebase/storage";
 import { httpsCallable } from "firebase/functions";
+import { MessageData } from "@/types/MessageData";
 
 // User functions
 export async function uploadSignupData(signUpData: SignUpData, uid: string) {
@@ -517,6 +518,26 @@ export async function setupChat(uid1: string, uid2: string) {
     }
   } catch (e) {
     console.log(e);
+    error = e as FirebaseError;
+  }
+
+  return { result, error };
+}
+
+export async function sendMessage(chatId: string, message: MessageData) {
+  let result: string | null = null,
+    error: FirebaseError | null = null;
+
+  try {
+    const chatRef = doc(db, "chats", chatId);
+    const messagesCollectionRef = collection(chatRef, "messages");
+
+    await addDoc(messagesCollectionRef, {
+      ...message,
+    });
+
+    result = "Message sent successfully!";
+  } catch (e) {
     error = e as FirebaseError;
   }
 
