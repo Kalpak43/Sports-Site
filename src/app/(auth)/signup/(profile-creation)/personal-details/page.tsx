@@ -1,7 +1,6 @@
 "use client";
 
 import { useSignUpDataContext } from "@/contexts/SignupDataContext";
-import { SignUpData } from "@/types/SignUpData";
 import { useRouter } from "next/navigation";
 import React from "react";
 

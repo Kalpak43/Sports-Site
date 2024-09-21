@@ -1,6 +1,5 @@
 "use client";
 
-import { SignUpData } from "@/types/SignUpData";
 import { createContext, useContext, useEffect, useState } from "react";
 
 export const signUpDataContext = createContext<{

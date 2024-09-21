@@ -1,4 +1,3 @@
-import { PostData } from "@/types/PostData";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { FaPlus } from "react-icons/fa6";
@@ -9,7 +8,7 @@ export default function MediaInputArray({
 }: {
   media: string[];
   setNewPostData: React.Dispatch<React.SetStateAction<any>>;
-}) {    
+}) {
   const imageInputRef = React.useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -26,7 +25,10 @@ export default function MediaInputArray({
     >
       {media.map((m, index) => {
         return (
-          <div key={index} className="h-[100px] aspect-square rounded-lg border-2 border-neutral">
+          <div
+            key={index}
+            className="h-[100px] aspect-square rounded-lg border-2 border-neutral"
+          >
             <Image
               src={m}
               alt="Post Image"
@@ -58,7 +60,6 @@ export default function MediaInputArray({
             }
           }}
         />
-
       </div>
     </div>
   );

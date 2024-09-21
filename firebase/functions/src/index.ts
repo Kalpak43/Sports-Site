@@ -7,16 +7,16 @@
  * See a full list of supported triggers at https://firebase.google.com/docs/functions
  */
 
-import { onRequest } from "firebase-functions/v2/https";
+import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getUserDoc } from "./requests/getUserDoc";
 import { setupChat } from "./requests/chatRequests";
+// import { setupChat } from "./requests/chatRequests";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
-
-const admin = require('firebase-admin');
+const admin = require("firebase-admin");
 const app = admin.initializeApp();
 
 export const helloWorld = onRequest((request, response) => {
@@ -32,10 +32,18 @@ export const getUserDocFromUID = onRequest(async (request, response) => {
   response.send(doc);
 });
 
-export const getChat = onRequest(async (request, response) => {
-  const { uid1, uid2 } = request.query;
+// export const getChat = onRequest(async (request, response) => {
+//   const { uid1, uid2 } = request.query;
 
-  const chatId = await setupChat(app, uid1 as string, uid2 as string);
+//   const chatId = await setupChat(app, uid1 as string, uid2 as string);
 
-  response.send({ chatId });
+//   response.send({ chatId });
+// });
+
+export const getChat = onCall(async (request) => {
+  const { uid1, uid2 } = request.data;
+
+  const chatId = await setupChat(app, uid1, uid2);
+
+  return { ...chatId };
 });

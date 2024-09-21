@@ -1,6 +1,5 @@
 "use client";
 import { useSignUpDataContext } from "@/contexts/SignupDataContext";
-import { SignUpData } from "@/types/SignUpData";
 import { convertToBase64 } from "@/utils/base64";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
