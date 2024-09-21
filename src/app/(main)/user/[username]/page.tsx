@@ -12,7 +12,7 @@ import {
 } from "@/firebase/db";
 import Image from "next/image";
 import Link from "next/link";
-import { useParams, useRouter } from "next/navigation";
+import { redirect, useParams, useRouter } from "next/navigation";
 import React, { useEffect } from "react";
 import { FaCakeCandles, FaLocationArrow, FaPlus } from "react-icons/fa6";
 import { BsChatLeftTextFill } from "react-icons/bs";
@@ -39,7 +39,6 @@ export default function UserPage() {
           alert(error);
           return;
         }
-
         setResult(result);
         setLoading(false);
       }
@@ -49,6 +48,12 @@ export default function UserPage() {
   }, [search]);
 
   useEffect(() => {
+    if (result && user) {
+      if (result.uid === user.uid) {
+        redirect("/profile");
+      }
+    }
+
     async function checkFollowing() {
       await checkFollow(user?.uid as string, result?.uid as string).then(
         (res) => {
@@ -160,27 +165,32 @@ export default function UserPage() {
                   </Link>
                 </div>
               </div>
-              <div className="flex justify-center gap-4">
-                <Button
-                  className="btn btn-square btn-ghost text-center"
-                  onClick={async () => {
-                    await setupChat(user?.uid as string, result.uid as string)
-                      .then((res) => {
-                        if(res.error) {
+              {user?.uid !== result.uid && (
+                <div className="flex justify-center gap-4">
+                  <Button
+                    className="btn btn-square btn-ghost text-center"
+                    onClick={async () => {
+                      await setupChat(
+                        user?.uid as string,
+                        result.uid as string
+                      ).then((res) => {
+                        if (res.error) {
                           alert(res.error);
                           return;
                         }
                         router.push(`/chat/${res.result?.id}`);
-                      })
-                  }}
-                >
-                  <BsChatLeftTextFill size={24} />
-                </Button>
-              </div>
+                      });
+                    }}
+                  >
+                    <BsChatLeftTextFill size={24} />
+                  </Button>
+                </div>
+              )}
             </div>
 
             {user &&
               isProfileCreated &&
+              user.uid !== result.uid &&
               (isFollowing ? (
                 <button
                   className="btn btn-primary btn-block mt-2"
