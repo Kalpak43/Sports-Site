@@ -11,7 +11,6 @@ import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getUserDoc } from "./requests/getUserDoc";
 import { setupChat } from "./requests/chatRequests";
-// import { setupChat } from "./requests/chatRequests";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript

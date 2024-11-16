@@ -532,6 +532,15 @@ export async function sendMessage(chatId: string, message: MessageData) {
     const chatRef = doc(db, "chats", chatId);
     const messagesCollectionRef = collection(chatRef, "messages");
 
+    if (message.image) {
+      const { result, error } = await mediaUpload(message.image, "chats");
+      if (result) {
+        message.image = await getDownloadURL(result);
+      } else {
+        throw error;
+      }
+    }
+
     await addDoc(messagesCollectionRef, {
       ...message,
     });
