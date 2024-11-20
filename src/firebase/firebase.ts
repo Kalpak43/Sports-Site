@@ -20,6 +20,6 @@ const auth = getAuth();
 const storage = getStorage();
 const db = getFirestore();
 const functions = getFunctions(app);
-connectFunctionsEmulator(functions, "localhost", 5001);
+// connectFunctionsEmulator(functions, "localhost", 5001);
 
 export { app, auth, storage, db, functions };
