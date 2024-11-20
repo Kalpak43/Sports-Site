@@ -11,13 +11,16 @@ import { onCall, onRequest } from "firebase-functions/v2/https";
 import * as logger from "firebase-functions/logger";
 import { getUserDoc } from "./requests/getUserDoc";
 import { setupChat } from "./requests/chatRequests";
-// import { setupChat } from "./requests/chatRequests";
+import { sendEmailNotification } from "./requests/sendEmailNotification";
 
 // Start writing functions
 // https://firebase.google.com/docs/functions/typescript
 
 const admin = require("firebase-admin");
 const app = admin.initializeApp();
+const functions = require("firebase-functions");
+
+const corsHandler = require("cors")({ origin: true });
 
 export const helloWorld = onRequest((request, response) => {
   logger.info("Hello logs!", {structuredData: true});
@@ -47,3 +50,105 @@ export const getChat = onCall(async (request) => {
 
   return { ...chatId };
 });
+
+export const NotifyUser = functions.firestore
+  .document("chats/{chatId}/messages/{messageId}")
+  .onCreate(async (snapshot: any, context: any) => {
+    const message = snapshot.data();
+
+    const chatId = context.params.chatId;
+    const chatDoc = await admin
+      .firestore()
+      .collection("chats")
+      .doc(chatId)
+      .get();
+    const chatData = chatDoc.data();
+
+    if (!chatData) {
+      return;
+    }
+
+    const receiverId: string | null = chatData.members.filter(
+      (member: string) => member !== message.sender
+    )[0];
+
+    if (!receiverId) {
+      return;
+    }
+
+    const userRecord = await admin.auth().getUser(receiverId);
+    const receiverEmail = userRecord.email;
+
+    // You can now use the receiverEmail for further processing
+    logger.info(`Receiver email: ${receiverEmail}`);
+
+    const senderId = message.sender;
+    const senderRecord = await admin.auth().getUser(senderId);
+    const senderName = senderRecord.displayName;
+
+    if (!senderName) {
+      logger.warn(`Sender name not found for UID: ${senderId}`);
+      return;
+    }
+
+    logger.info(`Sender name: ${senderName}`);
+    const senderDoc = await admin
+      .firestore()
+      .collection("users")
+      .doc(senderId)
+      .get();
+    const senderData = senderDoc.data();
+
+    if (!senderData) {
+      logger.warn(`Sender data not found for UID: ${senderId}`);
+      return;
+    }
+
+    const senderUsername = senderData.username;
+
+    if (!senderUsername) {
+      logger.warn(`Sender username not found for UID: ${senderId}`);
+      return;
+    }
+
+    logger.info(`Sender username: ${senderUsername}`);
+
+    await sendEmailNotification(receiverEmail, {
+      ...message,
+      sender: senderUsername,
+    });
+
+    return;
+  });
+
+export const createMapsSession = functions.https.onRequest(
+  async (req: any, res: any) => {
+    corsHandler(req, res, async () => {
+      const apiKey = functions.config().googlemaps.apikey;
+      const googleMapsUrl = `https://tile.googleapis.com/v1/createSession?key=${apiKey}`;
+
+      try {
+        const response = await fetch(googleMapsUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mapType: "roadmap",
+            language: "en",
+            region: "us",
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        res.status(200).send("Session created");
+      } catch (e: any) {
+        res.send("Error creating session");
+        res.status(500).send("Error creating session");
+      }
+    });
+  }
+);

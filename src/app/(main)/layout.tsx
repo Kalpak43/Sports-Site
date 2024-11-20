@@ -18,11 +18,11 @@ export default function MainLayout({
 
   return (
     <main className="bg-neutral">
-      <Navbar />
+      <Navbar />{" "}
+      <Modal show={new_post === "true"}>
+        <NewPostForm />
+      </Modal>
       <main className="min-h-[90vh] rounded-t-3xl bg-base-100 p-4 relative overflow-clip">
-        <Modal show={new_post === "true"}>
-          <NewPostForm />
-        </Modal>
         {children}
       </main>
     </main>

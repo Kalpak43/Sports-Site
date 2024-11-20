@@ -515,11 +515,9 @@ export async function setupChat(uid1: string, uid2: string) {
 
     const res = await getChat({ uid1, uid2 });
     if (res) {
-      console.log(res);
       result = res.data as ChatData;
     }
   } catch (e) {
-    console.log(e);
     error = e as FirebaseError;
   }
 
@@ -533,6 +531,15 @@ export async function sendMessage(chatId: string, message: MessageData) {
   try {
     const chatRef = doc(db, "chats", chatId);
     const messagesCollectionRef = collection(chatRef, "messages");
+
+    if (message.image) {
+      const { result, error } = await mediaUpload(message.image, "chats");
+      if (result) {
+        message.image = await getDownloadURL(result);
+      } else {
+        throw error;
+      }
+    }
 
     await addDoc(messagesCollectionRef, {
       ...message,

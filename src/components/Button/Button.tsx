@@ -7,16 +7,16 @@ export default function Button({
 }: {
   children: React.ReactNode;
   className?: string;
-  onClick: () => void;
+  onClick: (e: React.MouseEvent<HTMLButtonElement, MouseEvent>) => void;
 }) {
   const [loading, setLoading] = React.useState<boolean>(false);
 
   return (
     <button
       className={className}
-      onClick={async () => {
+      onClick={async (e) => {
         setLoading(true);
-        await onClick();
+        await onClick(e);
         setLoading(false);
       }}
     >
