@@ -1,10 +1,10 @@
 // Helper function to send email
+import * as nodemailer from "nodemailer";
+
 export const sendEmailNotification = async (
   email: string,
   messageContent: any
 ) => {
-  const nodemailer = require("nodemailer");
-
   const transporter = nodemailer.createTransport({
     service: "gmail",
     auth: {

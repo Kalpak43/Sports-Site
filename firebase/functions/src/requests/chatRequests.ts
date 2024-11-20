@@ -1,4 +1,4 @@
-import { Timestamp } from "firebase-admin/firestore";
+import {Timestamp} from "firebase-admin/firestore";
 
 
 export const setupChat = async (app: any, uid1: string, uid2: string) => {
