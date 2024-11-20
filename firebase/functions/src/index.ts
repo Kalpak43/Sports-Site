@@ -23,14 +23,13 @@ const functions = require("firebase-functions");
 const corsHandler = require("cors")({ origin: true });
 
 export const helloWorld = onRequest((request, response) => {
-  logger.info("Hello logs!", {structuredData: true});
+  logger.info("Hello logs!", { structuredData: true });
   response.send("Hello from Firebase!");
 });
 
-
 export const getUserDocFromUID = onRequest(async (request, response) => {
-  const {uid} = request.query;
-  const doc = await getUserDoc(uid as string);
+  const { uid } = request.query;
+  const doc = await getUserDoc(app, uid as string);
 
   response.send(doc);
 });
