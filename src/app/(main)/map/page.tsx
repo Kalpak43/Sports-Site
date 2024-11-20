@@ -12,7 +12,7 @@ const defaultOptions = {
   zoom: 20,
 };
 
-export default function page() {
+export default function MapPage() {
   const mapRef = useRef<HTMLDivElement | null>(null);
 
   useEffect(() => {
