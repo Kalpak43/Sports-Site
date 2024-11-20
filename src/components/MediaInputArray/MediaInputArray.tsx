@@ -1,3 +1,4 @@
+import { PostData } from "@/types/PostData";
 import Image from "next/image";
 import React, { useEffect } from "react";
 import { FaPlus } from "react-icons/fa6";

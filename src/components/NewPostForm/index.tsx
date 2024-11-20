@@ -9,6 +9,7 @@ import MediaInputArray from "../MediaInputArray/MediaInputArray";
 import { fetchBlobFromUrl } from "@/utils/fetchBlob";
 import { makePost } from "@/firebase/db";
 import { useAuthContext } from "@/contexts/AuthContext";
+import { PostData } from "@/types/PostData";
 
 export default function NewPostForm() {
   const router = useRouter();

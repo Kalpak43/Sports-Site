@@ -8,6 +8,7 @@ import {
   getSinglePost,
   likePost,
 } from "@/firebase/db";
+import { PostData } from "@/types/PostData";
 import Image from "next/image";
 import Link from "next/link";
 import { useParams, useRouter } from "next/navigation";

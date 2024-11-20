@@ -1,4 +1,5 @@
 import { searchUsers } from "@/firebase/db";
+import { UserData } from "@/types/UserData";
 import Link from "next/link";
 import React, { useEffect } from "react";
 

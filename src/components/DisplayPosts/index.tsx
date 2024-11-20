@@ -6,6 +6,7 @@ import React, { useEffect } from "react";
 import { FaRegHeart } from "react-icons/fa";
 import { BiCommentDetail } from "react-icons/bi";
 import Link from "next/link";
+import { PostData } from "@/types/PostData";
 
 export default function DisplayPosts({
   getPosts,

@@ -3,6 +3,7 @@
 import { getUserData, isSignedUp } from "@/firebase/db";
 import { auth } from "@/firebase/firebase";
 import { AuthData } from "@/types/AuthData";
+import { UserData } from "@/types/UserData";
 import { User, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import {
