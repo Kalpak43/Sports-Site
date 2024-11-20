@@ -513,11 +513,9 @@ export async function setupChat(uid1: string, uid2: string) {
 
     const res = await getChat({ uid1, uid2 });
     if (res) {
-      console.log(res);
       result = res.data as ChatData;
     }
   } catch (e) {
-    console.log(e);
     error = e as FirebaseError;
   }
 

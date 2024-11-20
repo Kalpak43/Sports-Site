@@ -5,9 +5,11 @@ import { sendMessage } from "@/firebase/db";
 import { useAuthContext } from "@/contexts/AuthContext";
 import Image from "next/image";
 import { motion } from "framer-motion";
+import { httpsCallable } from "firebase/functions";
+import { functions } from "@/firebase/firebase";
 
 export default function ChatInput({ chatId }: { chatId: string }) {
-  const { user } = useAuthContext();
+  const { user, userData } = useAuthContext();
   const [message, setMessage] = useState("");
   const [image, setImage] = useState<string | null>(null);
 
@@ -63,7 +65,9 @@ export default function ChatInput({ chatId }: { chatId: string }) {
               sender: user?.uid as string,
               createdAt: new Date(),
             });
+
             setMessage("");
+
             setImage(null);
           }}
         >

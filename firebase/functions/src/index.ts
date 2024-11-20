@@ -20,6 +20,8 @@ const admin = require("firebase-admin");
 const app = admin.initializeApp();
 const functions = require("firebase-functions");
 
+const corsHandler = require("cors")({ origin: true });
+
 export const helloWorld = onRequest((request, response) => {
   logger.info("Hello logs!", { structuredData: true });
   response.send("Hello from Firebase!");
@@ -117,3 +119,35 @@ export const NotifyUser = functions.firestore
 
     return;
   });
+
+export const createMapsSession = functions.https.onRequest(
+  async (req: any, res: any) => {
+    corsHandler(req, res, async () => {
+      const apiKey = functions.config().googlemaps.apikey;
+      const googleMapsUrl = `https://tile.googleapis.com/v1/createSession?key=${apiKey}`;
+
+      try {
+        const response = await fetch(googleMapsUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            mapType: "roadmap",
+            language: "en",
+            region: "us",
+          }),
+        });
+
+        const data = await response.json();
+
+        console.log(data);
+
+        res.status(200).send("Session created");
+      } catch (e: any) {
+        res.send("Error creating session");
+        res.status(500).send("Error creating session");
+      }
+    });
+  }
+);
