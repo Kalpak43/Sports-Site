@@ -56,8 +56,13 @@ export default function Navbar() {
                   </Link>
                 </li>
                 <li>
-                  <Link href={"/?new_post=true"} className="justify-between">
+                  <Link href={"?new_post=true"} className="justify-between">
                     New Post
+                  </Link>
+                </li>
+                <li>
+                  <Link href={"?call_players=true"} className="justify-between">
+                    Call Players
                   </Link>
                 </li>
                 <li>

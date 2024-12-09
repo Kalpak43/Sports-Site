@@ -1,4 +1,5 @@
 "use client";
+import CallPlayers from "@/components/CallPlayers/CallPlayers";
 import Modal from "@/components/Modal";
 import Navbar from "@/components/Navbar";
 import NewPostForm from "@/components/NewPostForm";
@@ -15,12 +16,16 @@ export default function MainLayout({
   // TODO: Not really protected
   const searchParams = useSearchParams();
   const new_post = searchParams.get("new_post");
+  const call_players = searchParams.get("call_players");
 
   return (
     <main className="bg-neutral">
-      <Navbar />{" "}
+      <Navbar />
       <Modal show={new_post === "true"}>
         <NewPostForm />
+      </Modal>
+      <Modal show={call_players === "true"}>
+        <CallPlayers />
       </Modal>
       <main className="min-h-[90vh] rounded-t-3xl bg-base-100 p-4 relative overflow-clip">
         {children}

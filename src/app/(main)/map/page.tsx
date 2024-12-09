@@ -17,6 +17,7 @@ export default function MapPage() {
 
   useEffect(() => {
     console.log("Loading Google Maps...");
+
     loader
       .importLibrary("maps")
       .then(({ Map }) => {
