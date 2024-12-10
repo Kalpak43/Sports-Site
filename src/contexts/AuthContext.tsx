@@ -78,13 +78,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setDataUploaded,
       }}
     >
-      {loading ? (
+      {/* {loading ? (
         <div className="min-h-[100dvh] flex items-center justify-center">
           <span className="loading loading-bars loading-lg"></span>
         </div>
       ) : (
         children
-      )}
+      )} */}
+      {children}
     </AuthContext.Provider>
   );
 }

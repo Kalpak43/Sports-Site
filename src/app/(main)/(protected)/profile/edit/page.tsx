@@ -1,77 +1,101 @@
 "use client";
 
+import SkeletonWrapper from "@/components/SkeletonWrapper/SkeletonWrapper";
 import { useAuthContext } from "@/contexts/AuthContext";
 import { editUserData } from "@/firebase/db";
 import { UserData } from "@/types/UserData";
 import { convertToBase64 } from "@/utils/base64";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import React, { FormEvent, useEffect } from "react";
+import React, {
+  FormEvent,
+  memo,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { BiMessageSquareEdit } from "react-icons/bi";
 import { MdDeleteForever } from "react-icons/md";
 
 export default function EditPage() {
-  const router = useRouter();
-  const { user, userData, setUserData } = useAuthContext();
-  const [loading, setLoading] = React.useState(false);
+  const { userData } = useAuthContext();
 
-  let date = new Date();
-  date.setFullYear(date.getFullYear() - 18);
-  1;
-  const sports = [
-    "Cricket",
-    "Football",
-    "Basketball",
-    "Tennis",
-    "Badminton",
-    "Table Tennis",
-    "Hockey",
-    "Volleyball",
-    "Baseball",
-    "Rugby",
-  ];
-
-  const [updatedData, setUpdatedData] = React.useState<UserData | null>(null);
+  const [profile, setProfile] = useState<Pick<
+    UserData,
+    "name" | "username" | "bio" | "profilePhoto"
+  > | null>(null);
+  const [details, setDetails] = useState<Pick<
+    UserData,
+    "dob" | "gender" | "address" | "city" | "state"
+  > | null>(null);
+  const [interests, setInterests] = useState<string[]>([]);
 
   useEffect(() => {
     if (userData) {
-      setUpdatedData(userData);
+      setProfile({
+        name: userData.name,
+        username: userData.username,
+        bio: userData.bio,
+        profilePhoto: userData.profilePhoto,
+      });
+      setDetails({
+        dob: userData.dob,
+        gender: userData.gender,
+        address: userData.address,
+        city: userData.city,
+        state: userData.state,
+      });
+      setInterests(userData.preferences);
     }
-  }, []);
-
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    if (updatedData && updatedData?.preferences.length <= 4) {
-      alert("Please select atleast 4 interests");
-      return;
-    }
-
-    setLoading(true);
-    const { result, error } = await editUserData(
-      user?.uid as string,
-      updatedData as UserData
-    );
-
-    if (error) {
-      alert("Something went wrong! Please try again");
-      return;
-    }
-
-    alert(result);
-    setUserData(updatedData as UserData);
-    setLoading(false);
-    router.push("/profile");
-  };
+  }, [userData]);
 
   return (
     <div className="px-0 md:px-8 md:px-20 py-10">
-      <form action="" className="grid grid-cols-1 lg:grid-cols-3 gap-4">
-        <div className="px-4 md:px-8 py-10 md:border-2 border-gray-600 rounded-2xl space-y-4">
+      <form action="" className="grid grid-cols-1 lg:grid-cols-3 lg:gap-4">
+        <ProfileEditForm profile={profile} setProfile={setProfile} />
+        <DetailsEditForm details={details} setDetails={setDetails} />
+        <div className="px-4 md:px-8 py-10 md:border-2 border-gray-600 rounded-2xl space-y-4 flex flex-col justify-between">
+          <InterestsEditForm
+            interests={interests}
+            setInterests={setInterests}
+          />
+          <SkeletonWrapper show={<InputSkeleton variant="badge" />}>
+            <SaveButton
+              updatedData={{
+                ...(userData as UserData),
+                ...profile,
+                ...details,
+                preferences: interests,
+              }}
+            />
+          </SkeletonWrapper>
+        </div>
+      </form>
+    </div>
+  );
+}
+
+type ProfileEditFormProps = {
+  profile: Pick<UserData, "name" | "username" | "bio" | "profilePhoto"> | null;
+  setProfile: React.Dispatch<
+    React.SetStateAction<Pick<
+      UserData,
+      "name" | "username" | "bio" | "profilePhoto"
+    > | null>
+  >;
+};
+
+export const ProfileEditForm = memo(
+  ({ profile, setProfile }: ProfileEditFormProps) => {
+    return (
+      <div className="px-4 md:px-8 lg:py-10 md:border-2 border-gray-600 rounded-2xl space-y-4">
+        <SkeletonWrapper show={<InputSkeleton variant="image" />}>
           <div className="rounded-full max-w-[130px] p-2 aspect-square relative mx-auto">
             <Image
               src={
-                updatedData?.profilePhoto
-                  ? "data:image/png;base64," + updatedData?.profilePhoto
+                profile?.profilePhoto
+                  ? "data:image/png;base64," + profile?.profilePhoto
                   : "/placeholder.jpeg"
               }
               alt="Profile Picture"
@@ -90,7 +114,7 @@ export default function EditPage() {
                 onChange={(e) => {
                   if (e.target.files && e.target.files[0]) {
                     convertToBase64(e.target.files[0]).then((res) => {
-                      setUpdatedData((prev) => ({
+                      setProfile((prev) => ({
                         ...(prev as UserData),
                         profilePhoto: res,
                       }));
@@ -103,7 +127,7 @@ export default function EditPage() {
               type="button"
               className="absolute bottom-0 right-0"
               onClick={() => {
-                setUpdatedData((prev) => {
+                setProfile((prev) => {
                   return {
                     ...(prev as UserData),
                     profilePhoto: null,
@@ -114,18 +138,20 @@ export default function EditPage() {
               <MdDeleteForever size={20} className="text-error" />
             </button>
           </div>
+        </SkeletonWrapper>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Name</span>
-            </div>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Name</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="text" />}>
             <input
               type="text"
               placeholder="eg. John Doe"
               className="input input-bordered grow"
-              value={updatedData?.name}
+              value={profile?.name}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setProfile((prev) => {
                   return {
                     ...(prev as UserData),
                     name: e.target.value,
@@ -134,19 +160,21 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
+          </SkeletonWrapper>
+        </label>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Username</span>
-            </div>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Username</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="text" />}>
             <input
               type="text"
               placeholder="eg. JohnDoe@123"
               className="input input-bordered grow"
-              value={updatedData?.username}
+              value={profile?.username}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setProfile((prev) => {
                   return {
                     ...(prev as UserData),
                     username: e.target.value,
@@ -155,20 +183,22 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
+          </SkeletonWrapper>
+        </label>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Bio</span>
-            </div>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Bio</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="text" />}>
             <input
               type="text"
               placeholder="eg. Hi! I am John Doe"
               className="input input-bordered grow"
               maxLength={100}
-              value={updatedData?.bio}
+              value={profile?.bio}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setProfile((prev) => {
                   return {
                     ...(prev as UserData),
                     bio: e.target.value,
@@ -177,21 +207,49 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
-        </div>
-        <div className="px-4 md:px-8 py-10 md:border-2 border-gray-600 rounded-2xl space-y-4">
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Date of Birth</span>
-            </div>
+          </SkeletonWrapper>
+        </label>
+      </div>
+    );
+  }
+);
+
+type DetailsEditFormProps = {
+  details: Pick<
+    UserData,
+    "dob" | "gender" | "address" | "city" | "state"
+  > | null;
+  setDetails: React.Dispatch<
+    React.SetStateAction<Pick<
+      UserData,
+      "dob" | "gender" | "address" | "city" | "state"
+    > | null>
+  >;
+};
+
+export const DetailsEditForm = memo(
+  ({ details, setDetails }: DetailsEditFormProps) => {
+    const date = useMemo(() => {
+      let d = new Date();
+      d.setFullYear(d.getFullYear() - 18);
+      return d;
+    }, []);
+
+    return (
+      <div className="px-4 md:px-8 lg:py-10 md:border-2 border-gray-600 rounded-2xl space-y-4">
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Date of Birth</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="date" />}>
             <input
               type="date"
               placeholder="eg. John Doe"
               className="input input-bordered  grow"
               max={date.toISOString().split("T")[0]}
-              value={updatedData?.dob}
+              value={details?.dob}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setDetails((prev) => {
                   return {
                     ...(prev as UserData),
                     dob: e.target.value,
@@ -200,21 +258,23 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
+          </SkeletonWrapper>
+        </label>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Gender</span>
-            </div>
-            <div className="flex gap-8">
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Gender</span>
+          </div>
+          <div className="flex gap-8">
+            <SkeletonWrapper show={<InputSkeleton variant="radio" />}>
               <label htmlFor="" className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="gender"
                   className="radio radio-xs radio-primary"
-                  checked={updatedData?.gender === "male"}
+                  checked={details?.gender === "male"}
                   onChange={() => {
-                    setUpdatedData((prev) => {
+                    setDetails((prev) => {
                       return {
                         ...(prev as UserData),
                         gender: "male",
@@ -225,14 +285,16 @@ export default function EditPage() {
                 />
                 <span> Male</span>
               </label>
+            </SkeletonWrapper>
+            <SkeletonWrapper show={<InputSkeleton variant="radio" />}>
               <label htmlFor="" className="flex items-center gap-2">
                 <input
                   type="radio"
                   name="gender"
                   className="radio radio-xs radio-primary"
-                  checked={updatedData?.gender === "female"}
+                  checked={details?.gender === "female"}
                   onChange={() => {
-                    setUpdatedData((prev) => {
+                    setDetails((prev) => {
                       return {
                         ...(prev as UserData),
                         gender: "female",
@@ -243,20 +305,22 @@ export default function EditPage() {
                 />
                 <span>Female</span>
               </label>
-            </div>
-          </label>
+            </SkeletonWrapper>
+          </div>
+        </label>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">Address line 1</span>
-            </div>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">Address line 1</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="text" />}>
             <input
               type="text"
               placeholder="eg. Flat no. 101, Building Name"
               className="input input-bordered w-full"
-              value={updatedData?.address}
+              value={details?.address}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setDetails((prev) => {
                   return {
                     ...(prev as UserData),
                     address: e.target.value,
@@ -265,19 +329,21 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
+          </SkeletonWrapper>
+        </label>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">City</span>
-            </div>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">City</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="text" />}>
             <input
               type="text"
               placeholder="eg. Mumbai"
               className="input input-bordered w-full"
-              value={updatedData?.city}
+              value={details?.city}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setDetails((prev) => {
                   return {
                     ...(prev as UserData),
                     city: e.target.value,
@@ -286,19 +352,21 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
+          </SkeletonWrapper>
+        </label>
 
-          <label className="form-control w-full">
-            <div className="label">
-              <span className="label-text">State</span>
-            </div>
+        <label className="form-control w-full">
+          <div className="label">
+            <span className="label-text">State</span>
+          </div>
+          <SkeletonWrapper show={<InputSkeleton variant="text" />}>
             <input
               type="text"
               placeholder="eg. Maharashtra"
               className="input input-bordered w-full"
-              value={updatedData?.state}
+              value={details?.state}
               onChange={(e) => {
-                setUpdatedData((prev) => {
+                setDetails((prev) => {
                   return {
                     ...(prev as UserData),
                     state: e.target.value,
@@ -307,59 +375,147 @@ export default function EditPage() {
               }}
               required
             />
-          </label>
-        </div>
-        <div className="px-4 md:px-8 py-10 md:border-2 border-gray-600 rounded-2xl space-y-4 flex flex-col justify-between">
-          <div className="space-y-4">
-            <span className="label-text">Your Interests</span>
-            <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mx-auto">
-              {sports.map((sport, index) => (
-                <button
-                  type="button"
-                  key={index}
-                  className={`btn ${
-                    updatedData?.preferences.includes(sport)
-                      ? "btn-success"
-                      : "btn-outline btn-secondary"
-                  }`}
-                  onClick={() => {
-                    setUpdatedData((prev) => {
-                      if (prev?.preferences.includes(sport)) {
-                        return {
-                          ...(prev as UserData),
-                          preferences: prev?.preferences.filter(
-                            (preference) => preference !== sport
-                          ),
-                        };
-                      }
+          </SkeletonWrapper>
+        </label>
+      </div>
+    );
+  }
+);
+
+type InterestsEditFormProps = {
+  interests: string[];
+  setInterests: React.Dispatch<React.SetStateAction<string[]>>;
+};
+
+export const InterestsEditForm = memo(
+  ({ interests, setInterests }: InterestsEditFormProps) => {
+    const sports = useMemo(
+      () => [
+        "Cricket",
+        "Football",
+        "Basketball",
+        "Tennis",
+        "Badminton",
+        "Table Tennis",
+        "Hockey",
+        "Volleyball",
+        "Baseball",
+        "Rugby",
+      ],
+      []
+    );
+
+    return (
+      <div className="space-y-4">
+        <span className="label-text">Your Interests</span>
+        <div className="flex flex-wrap justify-center gap-x-4 gap-y-2 mx-auto">
+          {sports.map((sport, index) => (
+            <SkeletonWrapper
+              key={index}
+              show={<InputSkeleton variant="badge">{sport}</InputSkeleton>}
+            >
+              <button
+                type="button"
+                key={index}
+                className={`btn ${
+                  interests?.includes(sport)
+                    ? "btn-success"
+                    : "btn-outline btn-secondary"
+                }`}
+                onClick={() => {
+                  setInterests((prev) => {
+                    if (prev?.includes(sport)) {
                       return {
-                        ...(prev as UserData),
-                        preferences: [
-                          ...(prev?.preferences as string[]),
-                          sport,
-                        ],
+                        ...prev,
+                        preferences: prev.filter(
+                          (preference) => preference !== sport
+                        ),
                       };
-                    });
-                  }}
-                >
-                  {sport}
-                </button>
-              ))}
-            </div>
-          </div>
-          <button
-            onClick={handleSubmit}
-            className="btn btn-primary block mx-auto w-full"
-            disabled={loading}
-          >
-            {loading ? (
-              <span className="loading loading-spinner"></span>
-            ) : (
-              "Save Changes "
-            )}
-          </button>
+                    }
+                    return [...prev, sport];
+                  });
+                }}
+              >
+                {sport}
+              </button>
+            </SkeletonWrapper>
+          ))}
         </div>
-      </form>
-    </div>
-  );
+      </div>
+    );
+  }
+);
+
+export const SaveButton = memo(
+  ({ updatedData }: { updatedData: UserData | null }) => {
+    const [loading, setLoading] = React.useState(false);
+    const router = useRouter();
+    const { user, setUserData } = useAuthContext();
+
+    const handleSubmit = useCallback(
+      async (e: FormEvent) => {
+        e.preventDefault();
+        if (updatedData && updatedData?.preferences.length <= 4) {
+          alert("Please select atleast 4 interests");
+          return;
+        }
+
+        setLoading(true);
+        const { result, error } = await editUserData(
+          user?.uid as string,
+          updatedData as UserData
+        );
+
+        if (error) {
+          alert("Something went wrong! Please try again");
+          return;
+        }
+
+        alert(result);
+        setUserData(updatedData as UserData);
+        setLoading(false);
+        router.push("/profile");
+      },
+      [updatedData, user?.uid, setUserData, router]
+    );
+    return (
+      <button
+        onClick={handleSubmit}
+        className="btn btn-primary block mx-auto w-full"
+        disabled={loading}
+      >
+        {loading ? (
+          <span className="loading loading-spinner"></span>
+        ) : (
+          "Save Changes "
+        )}
+      </button>
+    );
+  }
+);
+
+type InputSkeletonProps = {
+  variant: "text" | "date" | "image" | "radio" | "badge";
+  children?: React.ReactNode;
+};
+
+export function InputSkeleton({ variant, children }: InputSkeletonProps) {
+  if (variant == "text" || variant == "date") {
+    return <div className="input skeleton-bg" />;
+  } else if (variant == "image") {
+    return (
+      <div className="rounded-full max-w-[130px] p-2 aspect-square relative mx-auto">
+        <div className="skeleton-bg h-full w-full object-cover rounded-full border-2" />
+      </div>
+    );
+  } else if (variant == "radio") {
+    return (
+      <div className="flex gap-4 items-center">
+        <div className="skeleton-bg radio radio-xs" />
+        <div className="px-8 py-2 skeleton-bg" />
+      </div>
+    );
+  } else if (variant == "badge") {
+    return <div className="btn skeleton-bg">{children}</div>;
+  }
 }

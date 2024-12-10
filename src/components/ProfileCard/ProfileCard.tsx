@@ -61,6 +61,6 @@ export default function ProfileCard() {
 
 export function ProfileCardSkeleton() {
   return (
-    <div className="w-full p-8 rounded-3xl space-y-8 relative skeleton-bg"></div>
+    <div className="w-full p-8 rounded-3xl space-y-8 relative skeleton-bg max-md:h-[50vh]"></div>
   );
 }
