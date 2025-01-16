@@ -8,6 +8,7 @@ import { User, onAuthStateChanged } from "firebase/auth";
 import { useRouter } from "next/navigation";
 import {
   ReactNode,
+  Suspense,
   createContext,
   useContext,
   useEffect,
@@ -85,7 +86,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       ) : (
         children
       )} */}
-      {children}
+      <Suspense fallback={null}>{children}</Suspense>
     </AuthContext.Provider>
   );
 }

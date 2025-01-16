@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { Suspense, useRef } from "react";
 import { FaGithub } from "react-icons/fa6";
 import { motion, useInView } from "framer-motion";
 
