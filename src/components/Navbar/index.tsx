@@ -22,8 +22,8 @@ export default function Navbar() {
       </div>
       {loading ? (
         <NavSkeleton />
-        // <div className="loading loading-spinner loading-xl text-info" />
       ) : (
+        // <div className="loading loading-spinner loading-xl text-info" />
         <div className="flex-none gap-2">
           {user ? (
             <>

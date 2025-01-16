@@ -18,6 +18,9 @@ import React, { useEffect } from "react";
 import { FaCakeCandles, FaLocationArrow, FaPlus } from "react-icons/fa6";
 import { BsChatLeftTextFill } from "react-icons/bs";
 import Button from "@/components/Button/Button";
+import ProfileCard, {
+  ProfileCardSkeleton,
+} from "@/components/ProfileCard/ProfileCard";
 
 export default function UserPage() {
   const { username } = useParams();
@@ -25,7 +28,7 @@ export default function UserPage() {
   const [search, setSearch] = React.useState<string | null>(null);
   const [result, setResult] = React.useState<UserData | null>(null);
   const [isFollowing, setIsFollowing] = React.useState<boolean>(false);
-  const [loading, setLoading] = React.useState<boolean>(false);
+  const [loading, setLoading] = React.useState<boolean>(true);
   const [followLoading, setFollowLoading] = React.useState<boolean>(false);
   const router = useRouter();
 
@@ -116,8 +119,20 @@ export default function UserPage() {
 
   return (
     <div className="px-0 md:px-8 md:px-20 py-10 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {loading ? (
-        <p>Loading...</p>
+      {!user || loading ? (
+        <>
+          <ProfileCardSkeleton />
+          <div className="w-full space-y-8 relative lg:col-span-2">
+            <div className="p-8 border-2 border-gray-600 rounded-3xl flex gap-2 flex-wrap justify-center">
+              <>
+                <span className="inline-block bg-secondary text-white rounded-full px-10 py-4 text-sm font-semibold mr-2 skeleton-bg"></span>
+                <span className="inline-block bg-secondary text-white rounded-full px-10 py-4 text-sm font-semibold mr-2 skeleton-bg"></span>
+                <span className="inline-block bg-secondary text-white rounded-full px-10 py-4 text-sm font-semibold mr-2 skeleton-bg"></span>
+              </>
+            </div>
+            <div className="p-8 skeleton-bg rounded-3xl min-h-[80vh]" />
+          </div>
+        </>
       ) : result ? (
         <>
           <div className="w-full p-8 border-2 border-gray-600 rounded-3xl space-y-8 relative">

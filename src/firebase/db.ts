@@ -265,8 +265,10 @@ export async function likePost(id: string, uid: string) {
     error: FirebaseError | null = null;
 
   try {
-    const postRef = doc(db, "posts", id);
+    const colRef = collection(db, "posts");
+    const postRef = doc(colRef, id);
     const likesDocRef = doc(db, "posts", id, "likes", uid);
+
     await setDoc(likesDocRef, {
       createdAt: new Date().toISOString(),
     });

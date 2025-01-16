@@ -116,7 +116,7 @@ export default function CallPlayers() {
                 }}
                 defaultCenter={center}
                 mapId={"745289b5d20e8fbc"}
-                defaultZoom={15}
+                defaultZoom={10}
                 gestureHandling={"greedy"}
                 disableDefaultUI={true}
                 
